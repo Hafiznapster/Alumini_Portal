@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Discussion - {{ category.name }} - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">Forum</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('forum.view_category', category_id=category.id) }}">{{ category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create Discussion</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Start a New Discussion in {{ category.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('forum.create_post', category_id=category.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="post-content" class="form-label">Content</label>
+                        <textarea class="form-control" id="post-content" name="content" rows="8" required maxlength="2000"></textarea>
+                        <div class="form-text text-end" id="char-counter">2000 characters remaining</div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('forum.view_category', category_id=category.id) }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Discussion</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

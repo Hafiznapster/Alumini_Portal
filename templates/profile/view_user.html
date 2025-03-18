@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.name }} Profile - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <img src="{{ url_for('static', filename='images/profiles/' + user.profile_pic) }}" alt="{{ user.name }}" class="profile-image mb-3">
+            </div>
+            <div class="col-md-9">
+                <h1>{{ user.name }}</h1>
+                <p class="lead mb-0">Class of {{ user.graduation_year }}</p>
+                <p class="text-muted">{{ user.degree }} in {{ user.major }}</p>
+                
+                {% if current_user.is_authenticated and current_user.id != user.id %}
+                <div class="mt-3">
+                    {% if user.mentor_status %}
+                    <a href="{{ url_for('mentorship.request_mentorship', mentor_id=user.id) }}" class="btn btn-primary">Request Mentorship</a>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-secondary" id="messageBtn">
+                        <i class="bi bi-envelope"></i> Message
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">About {{ user.name }}</h5>
+            </div>
+            <div class="card-body">
+                {% if user.bio %}
+                <p>{{ user.bio }}</p>
+                {% else %}
+                <p class="text-muted">No bio provided.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user.mentor_status %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Mentorship Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Areas of Expertise:</strong> {{ user.mentor_fields or 'Not specified' }}</p>
+                {% if user.mentor_bio %}
+                <p>{{ user.mentor_bio }}</p>
+                {% else %}
+                <p class="text-muted">No mentorship bio provided.</p>
+                {% endif %}
+                
+                {% if current_user.is_authenticated and current_user.id != user.id %}
+                <a href="{{ url_for('mentorship.request_mentorship', mentor_id=user.id) }}" class="btn btn-primary">Request Mentorship</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="activityTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">Forum Posts</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab" aria-controls="jobs" aria-selected="false">Job Postings</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-3" id="activityTabContent">
+                    <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                        {% if user.forum_posts %}
+                        <div class="list-group">
+                            {% for post in user.forum_posts %}
+                            <a href="{{ url_for('forum.view_post', post_id=post.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ post.title }}</h6>
+                                    <small>{{ post.created_at|time_since }}</small>
+                                </div>
+                                <small class="text-muted">{{ post.comments|length }} comments</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">No forum posts yet.</p>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
+                        {% if user.job_posts %}
+                        <div class="list-group">
+                            {% for job in user.job_posts %}
+                            <a href="{{ url_for('jobs.view_job', job_id=job.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ job.title }}</h6>
+                                    <small>{{ job.posted_date|time_since }}</small>
+                                </div>
+                                <small class="text-muted">{{ job.company }} - {{ job.location }}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">No job postings yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Alumni Information</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Graduation Year</span>
+                        <span class="badge bg-primary rounded-pill">{{ user.graduation_year }}</span>
+                    </li>
+                    {% if user.degree %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Degree</span>
+                        <span>{{ user.degree }}</span>
+                    </li>
+                    {% endif %}
+                    {% if user.major %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Major</span>
+                        <span>{{ user.major }}</span>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Member Since</span>
+                        <span>{{ user.created_at|format_date }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Admin Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                        Edit User
+                    </button>
+                    {% if user.is_admin %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeAdminModal">
+                        Remove Admin Status
+                    </button>
+                    {% else %}
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#makeAdminModal">
+                        Make Admin
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Send Message to {{ user.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="messageForm">
+                    <div class="mb-3">
+                        <label for="messageSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="messageSubject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageContent" class="form-label">Message</label>
+                        <textarea class="form-control" id="messageContent" rows="5" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendMessageBtn">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize message modal
+        const messageBtn = document.getElementById('messageBtn');
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        
+        if (messageBtn) {
+            messageBtn.addEventListener('click', function() {
+                messageModal.show();
+            });
+        }
+        
+        if (sendMessageBtn) {
+            sendMessageBtn.addEventListener('click', function() {
+                // In a real application, this would send the message to the backend
+                alert('Message functionality is not implemented in this demo.');
+                messageModal.hide();
+            });
+        }
+    });
+</script>
+{% endblock %} 

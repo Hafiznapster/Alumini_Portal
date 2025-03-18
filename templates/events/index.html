@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Alumni Events</h1>
+        
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="mb-4">
+            <a href="{{ url_for('events.create_event') }}" class="btn btn-primary">Create New Event</a>
+        </div>
+        {% endif %}
+        
+        <div class="mb-5">
+            <h2>Upcoming Events</h2>
+            {% if upcoming_events %}
+                <div class="row">
+                    {% for event in upcoming_events %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card event-card h-100">
+                            {% if event.image %}
+                            <img src="{{ url_for('static', filename='images/events/' + event.image) }}" class="card-img-top event-image" alt="{{ event.title }}">
+                            {% else %}
+                            <div class="card-img-top event-image bg-light d-flex align-items-center justify-content-center">
+                                <span class="text-muted">No image available</span>
+                            </div>
+                            {% endif %}
+                            <div class="event-date">{{ event.event_date.strftime('%b %d, %Y') }}</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text text-muted">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|truncate(150) }}</p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" class="btn btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">No upcoming events at this time. Check back soon!</div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <h2>Past Events</h2>
+            {% if past_events %}
+                <div class="row">
+                    {% for event in past_events %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card event-card h-100">
+                            {% if event.image %}
+                            <img src="{{ url_for('static', filename='images/events/' + event.image) }}" class="card-img-top event-image" alt="{{ event.title }}">
+                            {% else %}
+                            <div class="card-img-top event-image bg-light d-flex align-items-center justify-content-center">
+                                <span class="text-muted">No image available</span>
+                            </div>
+                            {% endif %}
+                            <div class="event-date">{{ event.event_date.strftime('%b %d, %Y') }}</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text text-muted">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|truncate(150) }}</p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" class="btn btn-outline-secondary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">No past events to display.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

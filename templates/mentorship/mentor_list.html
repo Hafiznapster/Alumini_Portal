@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Find a Mentor - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Find a Mentor</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="mentor-search" placeholder="Search mentors by name, field, or expertise...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="field-filter">
+                            <option value="">All Fields</option>
+                            <option value="business">Business</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="arts">Arts & Humanities</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if mentors %}
+        <div class="row" id="mentor-list">
+            {% for mentor in mentors %}
+            <div class="col-md-4 mb-4 mentor-card" 
+                 data-name="{{ mentor.name }}" 
+                 data-field="{{ mentor.mentor_fields }}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/profiles/' + mentor.profile_pic) }}" alt="{{ mentor.name }}" class="rounded-circle me-3 mentor-image">
+                            <div>
+                                <h5 class="card-title mb-0">{{ mentor.name }}</h5>
+                                <p class="card-text text-muted">Class of {{ mentor.graduation_year }}</p>
+                            </div>
+                        </div>
+                        <p><strong>Fields:</strong> {{ mentor.mentor_fields }}</p>
+                        <p><strong>Degree:</strong> {{ mentor.degree or 'Not specified' }}</p>
+                        {% if mentor.mentor_bio %}
+                        <p class="card-text">{{ mentor.mentor_bio|truncate(150) }}</p>
+                        {% else %}
+                        <p class="card-text">{{ mentor.bio|truncate(150) }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('mentorship.request_mentorship', mentor_id=mentor.id) }}" class="btn btn-primary">Request Mentorship</a>
+                            <a href="{{ url_for('profile.view_user', user_id=mentor.id) }}" class="btn btn-outline-secondary">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            There are no mentors available at this time. Check back later or consider <a href="{{ url_for('mentorship.become_mentor') }}">becoming a mentor</a> yourself.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('mentor-search');
+        const fieldFilter = document.getElementById('field-filter');
+        const mentorCards = document.querySelectorAll('.mentor-card');
+        
+        function filterMentors() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const fieldValue = fieldFilter.value.toLowerCase();
+            
+            mentorCards.forEach(function(card) {
+                const name = card.dataset.name.toLowerCase();
+                const field = card.dataset.field.toLowerCase();
+                
+                const matchesSearch = name.includes(searchTerm) || field.includes(searchTerm);
+                const matchesField = fieldValue === '' || field.includes(fieldValue);
+                
+                if (matchesSearch && matchesField) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        searchInput.addEventListener('input', filterMentors);
+        fieldFilter.addEventListener('change', filterMentors);
+    });
+</script>
+{% endblock %} 

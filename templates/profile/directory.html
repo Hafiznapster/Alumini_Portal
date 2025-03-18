@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Alumni Directory - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Alumni Directory</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="directory-search" placeholder="Search alumni by name, graduation year, or major...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="btn-group float-end" role="group" aria-label="Filter by graduation year">
+                            <button type="button" class="btn btn-outline-primary active" data-filter="all">All</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="2020s">2020s</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="2010s">2010s</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="2000s">2000s</button>
+                            <button type="button" class="btn btn-outline-primary" data-filter="1990s">Earlier</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" id="alumni-list">
+            {% for alumnus in alumni %}
+            <div class="col-md-4 mb-4 alumni-card" 
+                 data-name="{{ alumnus.name }}" 
+                 data-year="{{ alumnus.graduation_year }}" 
+                 data-major="{{ alumnus.major }}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/profiles/' + alumnus.profile_pic) }}" alt="{{ alumnus.name }}" class="rounded-circle me-3" width="60" height="60">
+                            <div>
+                                <h5 class="card-title mb-0">{{ alumnus.name }}</h5>
+                                <p class="card-text text-muted">Class of {{ alumnus.graduation_year }}</p>
+                            </div>
+                        </div>
+                        <p><strong>Degree:</strong> {{ alumnus.degree or 'Not specified' }}</p>
+                        <p><strong>Major:</strong> {{ alumnus.major or 'Not specified' }}</p>
+                        {% if alumnus.bio %}
+                        <p class="card-text">{{ alumnus.bio|truncate(100) }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="{{ url_for('profile.view_user', user_id=alumnus.id) }}" class="btn btn-outline-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('directory-search');
+        const alumniCards = document.querySelectorAll('.alumni-card');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            alumniCards.forEach(function(card) {
+                const name = card.dataset.name.toLowerCase();
+                const year = card.dataset.year;
+                const major = card.dataset.major ? card.dataset.major.toLowerCase() : '';
+                
+                if (name.includes(searchTerm) || year.includes(searchTerm) || major.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Filter by graduation year
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        
+        filterButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                
+                alumniCards.forEach(function(card) {
+                    const year = parseInt(card.dataset.year);
+                    
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else if (filter === '2020s' && year >= 2020) {
+                        card.style.display = 'block';
+                    } else if (filter === '2010s' && year >= 2010 && year < 2020) {
+                        card.style.display = 'block';
+                    } else if (filter === '2000s' && year >= 2000 && year < 2010) {
+                        card.style.display = 'block';
+                    } else if (filter === '1990s' && year < 2000) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %} 

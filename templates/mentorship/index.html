@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Mentorship Programs - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Mentorship Programs</h1>
+        
+        <div class="alert alert-info mb-4">
+            <h5>About Alumni Mentorship</h5>
+            <p>Connect with experienced alumni for guidance in your career path, or give back by becoming a mentor to fellow alumni. Our mentorship program facilitates meaningful connections between alumni at different stages of their professional journeys.</p>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3>Find a Mentor</h3>
+                        <p>Looking for guidance in your career? Connect with experienced alumni who can help you navigate your professional journey.</p>
+                        <a href="{{ url_for('mentorship.mentor_list') }}" class="btn btn-primary">Browse Mentors</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h3>Become a Mentor</h3>
+                        <p>Share your knowledge and experience with fellow alumni. Help others navigate their career paths and make a meaningful impact.</p>
+                        <a href="{{ url_for('mentorship.become_mentor') }}" class="btn btn-primary">Register as Mentor</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav nav-tabs mb-4" id="mentorshipTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="as-mentee-tab" data-bs-toggle="tab" data-bs-target="#as-mentee" type="button" role="tab" aria-controls="as-mentee" aria-selected="true">My Mentors</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="as-mentor-tab" data-bs-toggle="tab" data-bs-target="#as-mentor" type="button" role="tab" aria-controls="as-mentor" aria-selected="false">My Mentees</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="mentorshipTabContent">
+            <div class="tab-pane fade show active" id="as-mentee" role="tabpanel" aria-labelledby="as-mentee-tab">
+                {% if mentee_programs %}
+                <div class="row">
+                    {% for program in mentee_programs %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Mentorship with {{ program.mentor.name }}</h5>
+                                <span class="badge {% if program.status == 'active' %}bg-success{% elif program.status == 'pending' %}bg-warning{% elif program.status == 'completed' %}bg-secondary{% else %}bg-danger{% endif %}">
+                                    {{ program.status|title }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="{{ url_for('static', filename='images/profiles/' + program.mentor.profile_pic) }}" alt="{{ program.mentor.name }}" class="rounded-circle me-3" width="50" height="50">
+                                    <div>
+                                        <h6 class="mb-0">{{ program.mentor.name }}</h6>
+                                        <small class="text-muted">Class of {{ program.mentor.graduation_year }}</small>
+                                    </div>
+                                </div>
+                                <p><strong>Focus Area:</strong> {{ program.focus_area }}</p>
+                                <p><strong>Started:</strong> {{ program.created_at|format_date }}</p>
+                                {% if program.notes %}
+                                <p><strong>Notes:</strong> {{ program.notes }}</p>
+                                {% endif %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('profile.view_user', user_id=program.mentor.id) }}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                    {% if program.status == 'active' %}
+                                    <a href="{{ url_for('mentorship.complete_mentorship', program_id=program.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Are you sure you want to mark this mentorship as completed?')">Mark as Completed</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You are not currently being mentored by anyone. 
+                    <a href="{{ url_for('mentorship.mentor_list') }}">Browse available mentors</a> to request mentorship.
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="tab-pane fade" id="as-mentor" role="tabpanel" aria-labelledby="as-mentor-tab">
+                {% if mentor_programs %}
+                <div class="row">
+                    {% for program in mentor_programs %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Mentoring {{ program.mentee.name }}</h5>
+                                <span class="badge {% if program.status == 'active' %}bg-success{% elif program.status == 'pending' %}bg-warning{% elif program.status == 'completed' %}bg-secondary{% else %}bg-danger{% endif %}">
+                                    {{ program.status|title }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="{{ url_for('static', filename='images/profiles/' + program.mentee.profile_pic) }}" alt="{{ program.mentee.name }}" class="rounded-circle me-3" width="50" height="50">
+                                    <div>
+                                        <h6 class="mb-0">{{ program.mentee.name }}</h6>
+                                        <small class="text-muted">Class of {{ program.mentee.graduation_year }}</small>
+                                    </div>
+                                </div>
+                                <p><strong>Focus Area:</strong> {{ program.focus_area }}</p>
+                                <p><strong>Requested:</strong> {{ program.created_at|format_date }}</p>
+                                {% if program.notes %}
+                                <p><strong>Notes:</strong> {{ program.notes }}</p>
+                                {% endif %}
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('profile.view_user', user_id=program.mentee.id) }}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                    
+                                    {% if program.status == 'pending' %}
+                                    <div>
+                                        <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='accept') }}" class="btn btn-sm btn-success">Accept</a>
+                                        <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='decline') }}" class="btn btn-sm btn-danger">Decline</a>
+                                    </div>
+                                    {% elif program.status == 'active' %}
+                                    <a href="{{ url_for('mentorship.complete_mentorship', program_id=program.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Are you sure you want to mark this mentorship as completed?')">Mark as Completed</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You are not currently mentoring anyone.
+                    {% if current_user.mentor_status %}
+                    Wait for mentorship requests or invite alumni to connect with you.
+                    {% else %}
+                    <a href="{{ url_for('mentorship.become_mentor') }}">Register as a mentor</a> to start receiving mentorship requests.
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

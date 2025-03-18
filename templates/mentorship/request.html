@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Mentorship - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Request Mentorship</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='images/profiles/' + mentor.profile_pic) }}" alt="{{ mentor.name }}" class="rounded-circle me-3" width="80" height="80">
+                        <div>
+                            <h3 class="mb-0">{{ mentor.name }}</h3>
+                            <p class="text-muted">Class of {{ mentor.graduation_year }}</p>
+                            <p><strong>Expertise:</strong> {{ mentor.mentor_fields }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form action="{{ url_for('mentorship.request_mentorship', mentor_id=mentor.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="focus_area" class="form-label">What areas would you like guidance in?</label>
+                        <select class="form-select" id="focus_area" name="focus_area" required>
+                            <option value="" selected disabled>Select primary focus area</option>
+                            <option value="Career Advancement">Career Advancement</option>
+                            <option value="Industry Insights">Industry Insights</option>
+                            <option value="Professional Development">Professional Development</option>
+                            <option value="Job Search Strategy">Job Search Strategy</option>
+                            <option value="Resume & Interview Preparation">Resume & Interview Preparation</option>
+                            <option value="Graduate School Advice">Graduate School Advice</option>
+                            <option value="Work-Life Balance">Work-Life Balance</option>
+                            <option value="Leadership Skills">Leadership Skills</option>
+                            <option value="Networking">Networking</option>
+                            <option value="Starting a Business">Starting a Business</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Message to Mentor</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="5" required></textarea>
+                        <div class="form-text">Introduce yourself and explain why you're interested in having {{ mentor.name }} as your mentor. Include your goals and what you hope to gain from this mentorship.</div>
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                        <label class="form-check-label" for="agree">
+                            I understand that mentors volunteer their time, and I commit to being responsive and respectful of their schedule.
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('mentorship.mentor_list') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Send Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Become a Mentor - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Become a Mentor</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <h5>About Becoming a Mentor</h5>
+                    <p>As a mentor, you'll have the opportunity to guide fellow alumni who are earlier in their career journey. Share your knowledge, experience, and insights to help them navigate their professional path.</p>
+                </div>
+                
+                <form action="{{ url_for('mentorship.become_mentor') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="fields" class="form-label">Areas of Expertise</label>
+                        <select class="form-select" id="fields" name="fields" required>
+                            <option value="" selected disabled>Select your primary area of expertise</option>
+                            <option value="Business & Management">Business & Management</option>
+                            <option value="Technology & IT">Technology & IT</option>
+                            <option value="Healthcare & Medicine">Healthcare & Medicine</option>
+                            <option value="Education & Teaching">Education & Teaching</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Arts & Humanities">Arts & Humanities</option>
+                            <option value="Science & Research">Science & Research</option>
+                            <option value="Law & Legal">Law & Legal</option>
+                            <option value="Finance & Accounting">Finance & Accounting</option>
+                            <option value="Marketing & Communications">Marketing & Communications</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="mentor_bio" class="form-label">Mentor Bio</label>
+                        <textarea class="form-control" id="mentor_bio" name="mentor_bio" rows="5" required></textarea>
+                        <div class="form-text">Describe your professional experience, expertise, and how you believe you can help mentees. This will be visible to potential mentees.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Mentorship Availability</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="virtual" name="virtual" checked>
+                            <label class="form-check-label" for="virtual">Available for virtual mentorship</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="in_person" name="in_person">
+                            <label class="form-check-label" for="in_person">Available for in-person mentorship</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="time_commitment" class="form-label">Time Commitment</label>
+                        <select class="form-select" id="time_commitment" name="time_commitment" required>
+                            <option value="" selected disabled>Select your availability</option>
+                            <option value="1-2 hours per month">1-2 hours per month</option>
+                            <option value="3-4 hours per month">3-4 hours per month</option>
+                            <option value="5+ hours per month">5+ hours per month</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                        <label class="form-check-label" for="agree">
+                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#mentorGuidelinesModal">Mentorship Guidelines</a> and commit to supporting fellow alumni to the best of my ability.
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('mentorship.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Register as Mentor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mentor Guidelines Modal -->
+<div class="modal fade" id="mentorGuidelinesModal" tabindex="-1" aria-labelledby="mentorGuidelinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mentorGuidelinesModalLabel">Mentorship Guidelines</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Mentor Responsibilities:</h6>
+                <ul>
+                    <li>Commit to meeting with your mentee regularly as agreed upon</li>
+                    <li>Provide honest, constructive feedback and guidance</li>
+                    <li>Respect your mentee's confidentiality</li>
+                    <li>Share relevant experiences and insights from your career journey</li>
+                    <li>Help your mentee set realistic goals and provide support in achieving them</li>
+                    <li>Communicate openly and clearly, responding to mentee inquiries in a timely manner</li>
+                    <li>Provide networking opportunities when appropriate</li>
+                </ul>
+                
+                <h6>Code of Conduct:</h6>
+                <ul>
+                    <li>Maintain professional boundaries in all interactions</li>
+                    <li>Treat all mentees with respect, regardless of background or experience level</li>
+                    <li>Do not use the mentorship program for personal gain or to promote personal business interests</li>
+                    <li>If you cannot fulfill your commitment, communicate this clearly to your mentee and the program administrators</li>
+                    <li>Provide feedback to improve the mentorship program when requested</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

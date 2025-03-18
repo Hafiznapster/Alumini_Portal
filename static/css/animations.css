@@ -1,0 +1,548 @@
+/* Additional animations for the Alumni Portal */
+
+/* Typing cursor effect */
+.typing-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1.2em;
+    background-color: var(--primary-color);
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Floating elements */
+.float {
+    animation: float 6s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Shake effect for notifications */
+.shake {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Pulsing animation */
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Fade in animations with different directions */
+.fade-in-up {
+    animation: fadeInUp 0.5s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-in-down {
+    animation: fadeInDown 0.5s forwards;
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.fade-in-left {
+    animation: fadeInLeft 0.5s forwards;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.fade-in-right {
+    animation: fadeInRight 0.5s forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Staggered animation delays */
+.stagger-delay > * {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.stagger-delay > *:nth-child(1) { animation: fadeInUp 0.5s 0.1s forwards; }
+.stagger-delay > *:nth-child(2) { animation: fadeInUp 0.5s 0.2s forwards; }
+.stagger-delay > *:nth-child(3) { animation: fadeInUp 0.5s 0.3s forwards; }
+.stagger-delay > *:nth-child(4) { animation: fadeInUp 0.5s 0.4s forwards; }
+.stagger-delay > *:nth-child(5) { animation: fadeInUp 0.5s 0.5s forwards; }
+.stagger-delay > *:nth-child(6) { animation: fadeInUp 0.5s 0.6s forwards; }
+
+/* Reveal text animation */
+.reveal-text {
+    position: relative;
+    color: transparent;
+}
+
+.reveal-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    color: var(--primary-color);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: revealText 2s forwards;
+}
+
+@keyframes revealText {
+    to { width: 100%; }
+}
+
+/* Timeline animation styles */
+.timeline {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background: var(--primary-color);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -2px;
+}
+
+.timeline-item {
+    padding: 20px 40px;
+    position: relative;
+    width: 50%;
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.5s ease;
+}
+
+.timeline-item.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 4px solid var(--primary-color);
+    border-radius: 50%;
+    top: 20px;
+    z-index: 1;
+}
+
+.timeline-item.left {
+    left: 0;
+}
+
+.timeline-item.right {
+    left: 50%;
+}
+
+.timeline-item.left::after {
+    right: -10px;
+}
+
+.timeline-item.right::after {
+    left: -10px;
+}
+
+/* Lightbox modal */
+.lightbox-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lightbox-modal.show {
+    opacity: 1;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.lightbox-modal.show .lightbox-content {
+    transform: scale(1);
+}
+
+.lightbox-img {
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1;
+    transition: var(--transition);
+}
+
+.lightbox-close:hover {
+    color: var(--danger-color);
+    transform: scale(1.2);
+}
+
+.lightbox-caption {
+    color: white;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Interactive event calendar styles */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.calendar-day {
+    padding: 10px;
+    text-align: center;
+    background-color: white;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.calendar-day.has-events {
+    position: relative;
+}
+
+.calendar-day.has-events::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    top: 5px;
+    right: 5px;
+}
+
+.calendar-day:hover {
+    background-color: var(--light-color);
+    transform: scale(1.05);
+}
+
+.calendar-day.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.day-events {
+    grid-column: 1 / -1;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 0 15px;
+    margin-top: 5px;
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Skill bars */
+.skill-bar {
+    margin-bottom: 20px;
+}
+
+.skill-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.progress {
+    height: 10px;
+    background-color: #f0f0f0;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    width: 0;
+    height: 100%;
+    transition: width 1s ease;
+}
+
+/* Custom animations for the Alumni Portal */
+
+/* Ripple effect */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.6s, opacity 0.6s;
+}
+
+.ripple:active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+}
+
+/* Gradient text animation */
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--primary-color));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+
+/* Card hover effect */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Shine effect on cards */
+.shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Staggered animations for lists */
+.stagger-in > * {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.stagger-in > *:nth-child(1) { animation: fadeIn 0.5s 0.1s forwards ease-out; }
+.stagger-in > *:nth-child(2) { animation: fadeIn 0.5s 0.2s forwards ease-out; }
+.stagger-in > *:nth-child(3) { animation: fadeIn 0.5s 0.3s forwards ease-out; }
+.stagger-in > *:nth-child(4) { animation: fadeIn 0.5s 0.4s forwards ease-out; }
+.stagger-in > *:nth-child(5) { animation: fadeIn 0.5s 0.5s forwards ease-out; }
+.stagger-in > *:nth-child(6) { animation: fadeIn 0.5s 0.6s forwards ease-out; }
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pulse animation */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Fade in animations with different directions */
+.fade-in {
+    animation: simpleFade 0.5s forwards;
+    opacity: 0;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-in-down {
+    animation: fadeInDown 0.5s forwards;
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.fade-in-left {
+    animation: fadeInLeft 0.5s forwards;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.fade-in-right {
+    animation: fadeInRight 0.5s forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+@keyframes simpleFade {
+    to { opacity: 1; }
+}
+
+/* Button hover animation */
+.btn-hover-fill {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 0.3s ease;
+}
+
+.btn-hover-fill::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: var(--primary-color);
+    transition: height 0.3s ease;
+    z-index: -1;
+}
+
+.btn-hover-fill:hover {
+    color: white;
+}
+
+.btn-hover-fill:hover::before {
+    height: 100%;
+}
+
+/* 3D button effect */
+.btn-3d {
+    position: relative;
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+}
+
+.btn-3d:hover {
+    transform: perspective(1000px) translateY(-5px) rotateX(10deg);
+}
+
+.btn-3d::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.1);
+    transform: translateZ(-10px);
+    border-radius: inherit;
+} 

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}My Events - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">My Events</h1>
+        
+        <ul class="nav nav-tabs mb-4" id="eventsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">Upcoming Events</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab" aria-controls="past" aria-selected="false">Past Events</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="eventsTabContent">
+            <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                {% if upcoming_events %}
+                <div class="row">
+                    {% for event in upcoming_events %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card event-card h-100">
+                            {% if event.image %}
+                            <img src="{{ url_for('static', filename='images/events/' + event.image) }}" class="card-img-top event-image" alt="{{ event.title }}">
+                            {% else %}
+                            <div class="card-img-top event-image bg-light d-flex align-items-center justify-content-center">
+                                <span class="text-muted">No image available</span>
+                            </div>
+                            {% endif %}
+                            <div class="event-date">{{ event.event_date.strftime('%b %d, %Y') }}</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text text-muted">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|truncate(150) }}</p>
+                            </div>
+                            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" class="btn btn-outline-primary">View Details</a>
+                                <a href="{{ url_for('events.unregister_event', event_id=event.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to unregister from this event?')">Unregister</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You are not registered for any upcoming events. 
+                    <a href="{{ url_for('events.index') }}">Browse events</a> to find interesting ones!
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+                {% if past_events %}
+                <div class="row">
+                    {% for event in past_events %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card event-card h-100">
+                            {% if event.image %}
+                            <img src="{{ url_for('static', filename='images/events/' + event.image) }}" class="card-img-top event-image" alt="{{ event.title }}">
+                            {% else %}
+                            <div class="card-img-top event-image bg-light d-flex align-items-center justify-content-center">
+                                <span class="text-muted">No image available</span>
+                            </div>
+                            {% endif %}
+                            <div class="event-date">{{ event.event_date.strftime('%b %d, %Y') }}</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text text-muted">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|truncate(150) }}</p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a href="{{ url_for('events.view_event', event_id=event.id) }}" class="btn btn-outline-secondary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You haven't attended any past events yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

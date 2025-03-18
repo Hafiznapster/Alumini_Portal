@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Alumni Portal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6" data-aos="fade-right">
+            <h1 class="display-4 fw-bold mb-4">Connect with <span class="text-primary hero-text">Alumni Worldwide</span><span class="typing-cursor"></span></h1>
+            <p class="lead mb-4">Build meaningful connections, discover opportunities, and stay connected with your alma mater through our comprehensive alumni network.</p>
+            {% if not current_user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-4 me-md-2">Login</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-primary btn-lg px-4">Sign Up</a>
+            </div>
+            {% else %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+                <a href="{{ url_for('events.index') }}" class="btn btn-primary btn-lg px-4 me-md-2">Explore Events</a>
+                <a href="{{ url_for('profile.alumni_directory') }}" class="btn btn-outline-primary btn-lg px-4">Find Alumni</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+            <div class="hero-image-container">
+                <img src="{{ url_for('static', filename='images/hero-image.jpg') }}" alt="Alumni Network" class="img-fluid rounded shadow hero-image">
+                <div class="floating-card float card-1">
+                    <i class="bi bi-people-fill"></i>
+                    <span>5000+ Alumni</span>
+                </div>
+                <div class="floating-card float card-2" style="animation-delay: 1s;">
+                    <i class="bi bi-briefcase-fill"></i>
+                    <span>500+ Job Opportunities</span>
+                </div>
+                <div class="floating-card float card-3" style="animation-delay: 2s;">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>150+ Events</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="statistics-section py-5 my-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-12 mb-4">
+                <h2 class="section-title" data-aos="fade-up">Our Global Alumni Network</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Connecting graduates and creating opportunities worldwide</p>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card">
+                    <i class="bi bi-people-fill stat-icon"></i>
+                    <h3 class="counter" data-count="5000">0</h3>
+                    <p>Alumni Members</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-card">
+                    <i class="bi bi-briefcase-fill stat-icon"></i>
+                    <h3 class="counter" data-count="500">0</h3>
+                    <p>Job Opportunities</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-card">
+                    <i class="bi bi-calendar-event stat-icon"></i>
+                    <h3 class="counter" data-count="150">0</h3>
+                    <p>Annual Events</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="stat-card">
+                    <i class="bi bi-globe stat-icon"></i>
+                    <h3 class="counter" data-count="45">0</h3>
+                    <p>Countries Represented</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="section-title" data-aos="fade-up">Key Features</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Everything you need to stay connected with your alma mater</p>
+            </div>
+        </div>
+        
+        <div class="row mb-5 align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="feature-image-container">
+                    <img src="{{ url_for('static', filename='images/events-feature.jpg') }}" alt="Alumni Events" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h3>Events & Reunions</h3>
+                    <p>Stay updated with the latest alumni events, reunions, and networking opportunities. Reconnect with old classmates and make new connections at our various gatherings throughout the year.</p>
+                    <a href="{{ url_for('events.index') }}" class="btn btn-outline-primary">View Events <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-5 align-items-center flex-row-reverse">
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="feature-image-container">
+                    <img src="{{ url_for('static', filename='images/jobs-feature.jpg') }}" alt="Job Opportunities" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <h3>Career Opportunities</h3>
+                    <p>Discover job opportunities shared by fellow alumni and the university network. Post job openings at your company or find your next career move through our extensive job board.</p>
+                    <a href="{{ url_for('jobs.index') }}" class="btn btn-outline-primary">Explore Jobs <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-5 align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="feature-image-container">
+                    <img src="{{ url_for('static', filename='images/mentorship-feature.jpg') }}" alt="Mentorship Program" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <h3>Mentorship Program</h3>
+                    <p>Connect with experienced alumni for guidance and career advice. Our mentorship program pairs alumni at different stages of their careers for mutual growth and development.</p>
+                    <a href="{{ url_for('mentorship.index') }}" class="btn btn-outline-primary">Join Program <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Alumni Stories -->
+<div class="alumni-stories-section py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="section-title" data-aos="fade-up">Featured Alumni Stories</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Inspiring journeys of our successful alumni</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card story-card h-100">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ url_for('static', filename='images/alumni-1.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="Jane Doe">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">Jane Doe</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Class of 2015</h6>
+                                <p class="card-text">Jane has recently been appointed as the CEO of a Fortune 500 company. Her journey from campus to corporate leadership showcases the impact of perseverance and vision.</p>
+                                <a href="#" class="btn btn-sm btn-outline-primary">Read Full Story</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card story-card h-100">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ url_for('static', filename='images/alumni-2.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="John Smith">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">John Smith</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Class of 2010</h6>
+                                <p class="card-text">John's startup has recently secured $5 million in Series A funding. His innovative approach to solving real-world problems has garnered attention in the tech industry.</p>
+                                <a href="#" class="btn btn-sm btn-outline-primary">Read Full Story</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="400">
+                <a href="#" class="btn btn-primary">View All Success Stories</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="cta-section py-5 text-center">
+    <div class="container">
+        <div class="cta-content p-5 rounded" data-aos="zoom-in">
+            <h2 class="mb-4">Join Our Global Alumni Network Today</h2>
+            <p class="lead mb-4">Connect with fellow alumni, access exclusive resources, and stay updated with the latest events and opportunities.</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.signup') }}" class="btn btn-lg btn-light">Sign Up Now <i class="bi bi-arrow-right"></i></a>
+            {% else %}
+            <a href="{{ url_for('profile.alumni_directory') }}" class="btn btn-lg btn-light">Explore Directory <i class="bi bi-arrow-right"></i></a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="testimonials-section py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="section-title" data-aos="fade-up">What Our Alumni Say</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Hear from members of our community</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
+                    <p class="testimonial-text">"The Alumni Portal has been an incredible resource for networking. I found my current job through a posting by a fellow alumnus!"</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='images/testimonial-1.jpg') }}" alt="Testimonial Author" class="rounded-circle me-3">
+                        <div>
+                            <h5 class="mb-0">Michael Brown</h5>
+                            <small class="text-muted">Class of 2018</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
+                    <p class="testimonial-text">"The mentorship program matched me with an experienced professional in my field. Their guidance has been invaluable to my career development."</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='images/testimonial-2.jpg') }}" alt="Testimonial Author" class="rounded-circle me-3">
+                        <div>
+                            <h5 class="mb-0">Sarah Johnson</h5>
+                            <small class="text-muted">Class of 2020</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
+                    <p class="testimonial-text">"I love attending the alumni events! It's a great way to reconnect with old friends and make meaningful professional connections."</p>
+                    <div class="testimonial-author d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='images/testimonial-3.jpg') }}" alt="Testimonial Author" class="rounded-circle me-3">
+                        <div>
+                            <h5 class="mb-0">David Chen</h5>
+                            <small class="text-muted">Class of 2012</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add an animated typing cursor to the hero text
+    const heroTextElement = document.querySelector('.hero-text');
+    if (heroTextElement) {
+        const cursorElement = document.querySelector('.typing-cursor');
+        setInterval(() => {
+            cursorElement.style.opacity = cursorElement.style.opacity === '0' ? '1' : '0';
+        }, 500);
+    }
+</script>
+{% endblock %} 

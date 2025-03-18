@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" alt="{{ current_user.name }}" class="profile-image mb-3">
+            </div>
+            <div class="col-md-9">
+                <h1>{{ current_user.name }}</h1>
+                <p class="lead mb-0">Class of {{ current_user.graduation_year }}</p>
+                <p class="text-muted">{{ current_user.degree }} in {{ current_user.major }}</p>
+                <div class="mt-3">
+                    <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+                    <a href="{{ url_for('profile.change_password') }}" class="btn btn-outline-secondary">Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">About Me</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.bio %}
+                <p>{{ current_user.bio }}</p>
+                {% else %}
+                <p class="text-muted">No bio provided yet. <a href="{{ url_for('profile.edit_profile') }}">Add one now</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">My Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="activityTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab" aria-controls="events" aria-selected="true">Events</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="false">Forum Posts</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab" aria-controls="jobs" aria-selected="false">Job Postings</button>
+                    </li>
+                </ul>
+                <div class="tab-content p-3" id="activityTabContent">
+                    <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
+                        {% if current_user.events %}
+                        <div class="list-group">
+                            {% for registration in current_user.events %}
+                            <a href="{{ url_for('events.view_event', event_id=registration.event.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ registration.event.title }}</h6>
+                                    <small>{{ registration.event.event_date.strftime('%b %d, %Y') }}</small>
+                                </div>
+                                <small class="text-muted">Registered on {{ registration.registration_date.strftime('%b %d, %Y') }}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">You haven't registered for any events yet.</p>
+                        <a href="{{ url_for('events.index') }}" class="btn btn-sm btn-outline-primary">Browse Events</a>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                        {% if current_user.forum_posts %}
+                        <div class="list-group">
+                            {% for post in current_user.forum_posts %}
+                            <a href="{{ url_for('forum.view_post', post_id=post.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ post.title }}</h6>
+                                    <small>{{ post.created_at|time_since }}</small>
+                                </div>
+                                <small class="text-muted">{{ post.comments|length }} comments</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">You haven't created any forum posts yet.</p>
+                        <a href="{{ url_for('forum.index') }}" class="btn btn-sm btn-outline-primary">Browse Forum</a>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="jobs" role="tabpanel" aria-labelledby="jobs-tab">
+                        {% if current_user.job_posts %}
+                        <div class="list-group">
+                            {% for job in current_user.job_posts %}
+                            <a href="{{ url_for('jobs.view_job', job_id=job.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ job.title }}</h6>
+                                    <small>{{ job.posted_date|time_since }}</small>
+                                </div>
+                                <small class="text-muted">{{ job.company }} - {{ job.location }}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">You haven't posted any job opportunities yet.</p>
+                        <a href="{{ url_for('jobs.create_job') }}" class="btn btn-sm btn-outline-primary">Post a Job</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Contact Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Email:</strong> {{ current_user.email }}</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Mentorship Status</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.mentorship_mentor %}
+                <p><strong>Mentoring:</strong> {{ current_user.mentorship_mentor|length }} alumni</p>
+                {% endif %}
+                
+                {% if current_user.mentorship_mentee %}
+                <p><strong>Mentored by:</strong> {{ current_user.mentorship_mentee|length }} alumni</p>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{{ url_for('mentorship.index') }}" class="btn btn-outline-primary">View Mentorship Programs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
