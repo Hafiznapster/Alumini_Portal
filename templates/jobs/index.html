@@ -24,28 +24,31 @@
         {% if job_posts %}
         <div class="job-list">
             {% for job in job_posts %}
-            <div class="card job-card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="card-title job-title">{{ job.title }}</h5>
-                            <h6 class="card-subtitle mb-2 company">{{ job.company }}</h6>
-                            <p class="card-text location"><i class="bi bi-geo-alt"></i> {{ job.location }}</p>
+                {% if job.author.role == 'alumni' %}  {# Only show jobs posted by alumni #}
+                <div class="card job-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title job-title">{{ job.title }}</h5>
+                                <h6 class="card-subtitle mb-2 company">{{ job.company }}</h6>
+                                <p class="card-text location"><i class="bi bi-geo-alt"></i> {{ job.location }}</p>
+                                <small class="text-muted">Posted by {{ job.author.name }} (Alumni)</small>
+                            </div>
+                            <span class="text-muted">Posted {{ job.posted_date|time_since }}</span>
                         </div>
-                        <span class="text-muted">Posted {{ job.posted_date|time_since }}</span>
-                    </div>
-                    <p class="card-text">{{ job.description|truncate(200) }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="{{ url_for('jobs.view_job', job_id=job.id) }}" class="btn btn-outline-primary">View Details</a>
-                        {% if current_user.is_authenticated and (current_user.id == job.user_id or current_user.is_admin) %}
-                        <div>
-                            <a href="{{ url_for('jobs.edit_job', job_id=job.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <a href="{{ url_for('jobs.delete_job', job_id=job.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job posting?')">Delete</a>
+                        <p class="card-text">{{ job.description|truncate(200) }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('jobs.view_job', job_id=job.id) }}" class="btn btn-outline-primary">View Details</a>
+                            {% if current_user.is_authenticated and (current_user.id == job.user_id or current_user.is_admin) %}
+                            <div>
+                                <a href="{{ url_for('jobs.edit_job', job_id=job.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="{{ url_for('jobs.delete_job', job_id=job.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job posting?')">Delete</a>
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
                 </div>
-            </div>
+                {% endif %}
             {% endfor %}
         </div>
         {% else %}

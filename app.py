@@ -37,6 +37,7 @@ def create_app():
     from routes.jobs import jobs as jobs_blueprint
     from routes.mentorship import mentorship as mentorship_blueprint
     from routes.forum import forum as forum_blueprint
+    from routes.chat import chat as chat_blueprint
     
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(profile_blueprint)
@@ -44,6 +45,7 @@ def create_app():
     app.register_blueprint(jobs_blueprint)
     app.register_blueprint(mentorship_blueprint)
     app.register_blueprint(forum_blueprint)
+    app.register_blueprint(chat_blueprint)
     
     @app.route('/')
     def index():

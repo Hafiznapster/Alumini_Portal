@@ -10,6 +10,7 @@ class User(UserMixin, db.Model):
     graduation_year = db.Column(db.Integer, nullable=False)
     degree = db.Column(db.String(100))
     major = db.Column(db.String(100))
+    role = db.Column(db.String(20), default='user')
     bio = db.Column(db.Text)
     profile_pic = db.Column(db.String(200), default='default.jpg')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -27,16 +28,19 @@ class User(UserMixin, db.Model):
     mentorship_mentee = db.relationship('MentorshipProgram', backref='mentee', foreign_keys='MentorshipProgram.mentee_id', lazy=True)
 
 class Event(db.Model):
+    """Event model."""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    location = db.Column(db.String(100))
+    location = db.Column(db.String(100), nullable=False)
     event_date = db.Column(db.DateTime, nullable=False)
+    image = db.Column(db.String(100))
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    image = db.Column(db.String(200))
     
     # Relationships
-    registrations = db.relationship('EventRegistration', back_populates='event')
+    creator = db.relationship('User', foreign_keys=[creator_id], backref='created_events')
+    registrations = db.relationship('EventRegistration', back_populates='event', lazy=True, cascade='all, delete-orphan')
 
 class EventRegistration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,3 +97,32 @@ class MentorshipProgram(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     focus_area = db.Column(db.String(100))
     notes = db.Column(db.Text) 
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    is_group = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Relationships
+    messages = db.relationship('ChatMessage', backref='chat', lazy=True, cascade='all, delete-orphan')
+    participants = db.relationship('User', secondary='chat_participants', backref='chats')
+    
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'), nullable=False)
+    
+    # Relationship to access the sender
+    sender = db.relationship('User', backref='sent_messages')
+
+# Association table for chat participants
+chat_participants = db.Table('chat_participants',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'), primary_key=True),
+    db.Column('joined_at', db.DateTime, default=datetime.utcnow)
+) 

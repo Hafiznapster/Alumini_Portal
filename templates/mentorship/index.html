@@ -33,6 +33,34 @@
             </div>
         </div>
         
+        <div class="row mb-5">
+            {% if session['role'] == 'user' %}
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Available Mentorship Programs</h3>
+                        <p>Connect with experienced alumni mentors to guide you in your career journey.</p>
+                        <div class="row mt-4">
+                            {% for mentor in mentors %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ mentor.name }}</h5>
+                                        <p class="card-text text-muted">{{ mentor.expertise }}</p>
+                                        <p class="card-text">{{ mentor.bio|truncate(100) }}</p>
+                                        <a href="{{ url_for('mentorship.request_mentorship', mentor_id=mentor.id) }}" 
+                                           class="btn btn-primary">Request Mentorship</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
         <ul class="nav nav-tabs mb-4" id="mentorshipTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="as-mentee-tab" data-bs-toggle="tab" data-bs-target="#as-mentee" type="button" role="tab" aria-controls="as-mentee" aria-selected="true">My Mentors</button>
@@ -115,14 +143,13 @@
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <a href="{{ url_for('profile.view_user', user_id=program.mentee.id) }}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                    <a href="{{ url_for('mentorship.view_program', program_id=program.id) }}" class="btn btn-sm btn-primary">Manage Program</a>
                                     
                                     {% if program.status == 'pending' %}
                                     <div>
                                         <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='accept') }}" class="btn btn-sm btn-success">Accept</a>
                                         <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='decline') }}" class="btn btn-sm btn-danger">Decline</a>
                                     </div>
-                                    {% elif program.status == 'active' %}
-                                    <a href="{{ url_for('mentorship.complete_mentorship', program_id=program.id) }}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Are you sure you want to mark this mentorship as completed?')">Mark as Completed</a>
                                     {% endif %}
                                 </div>
                             </div>

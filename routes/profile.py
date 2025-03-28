@@ -1,11 +1,44 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 from models import User
+from PIL import Image
 
 profile = Blueprint('profile', __name__, url_prefix='/profile')
+
+def allowed_file(filename):
+    """Check if the file extension is allowed."""
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_profile_image(file, user_id):
+    """Save and process the profile image."""
+    if file and allowed_file(file.filename):
+        # Create uploads directory if it doesn't exist
+        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads', 'profile_pics')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Generate secure filename
+        filename = secure_filename(f"{user_id}_{file.filename}")
+        filepath = os.path.join(upload_dir, filename)
+        
+        # Open and process image with Pillow
+        img = Image.open(file)
+        
+        # Convert to RGB if necessary
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        
+        # Resize image to 300x300 while maintaining aspect ratio
+        img.thumbnail((300, 300), Image.Resampling.LANCZOS)
+        
+        # Save the processed image
+        img.save(filepath, quality=85, optimize=True)
+        
+        return f"uploads/profile_pics/{filename}"
+    return None
 
 @profile.route('/')
 @login_required
@@ -34,11 +67,10 @@ def edit_profile():
         # Handle profile picture upload
         if 'profile_pic' in request.files:
             file = request.files['profile_pic']
-            if file.filename:
-                filename = secure_filename(file.filename)
-                file_path = os.path.join('static/images/profiles', filename)
-                file.save(file_path)
-                current_user.profile_pic = filename
+            if file and file.filename:
+                profile_pic_path = save_profile_image(file, current_user.id)
+                if profile_pic_path:
+                    current_user.profile_pic = profile_pic_path
 
         db.session.commit()
         flash('Your profile has been updated!')

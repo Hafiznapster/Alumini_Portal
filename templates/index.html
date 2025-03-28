@@ -8,145 +8,255 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section">
-    <div class="row align-items-center">
-        <div class="col-lg-6" data-aos="fade-right">
-            <h1 class="display-4 fw-bold mb-4">Connect with <span class="text-primary hero-text">Alumni Worldwide</span><span class="typing-cursor"></span></h1>
-            <p class="lead mb-4">Build meaningful connections, discover opportunities, and stay connected with your alma mater through our comprehensive alumni network.</p>
-            {% if not current_user.is_authenticated %}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
-                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-4 me-md-2">Login</a>
-                <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-primary btn-lg px-4">Sign Up</a>
-            </div>
-            {% else %}
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
-                <a href="{{ url_for('events.index') }}" class="btn btn-primary btn-lg px-4 me-md-2">Explore Events</a>
-                <a href="{{ url_for('profile.alumni_directory') }}" class="btn btn-outline-primary btn-lg px-4">Find Alumni</a>
-            </div>
-            {% endif %}
-        </div>
-        <div class="col-lg-6" data-aos="fade-left">
-            <div class="hero-image-container">
-                <img src="{{ url_for('static', filename='images/hero-image.jpg') }}" alt="Alumni Network" class="img-fluid rounded shadow hero-image">
-                <div class="floating-card float card-1">
-                    <i class="bi bi-people-fill"></i>
-                    <span>5000+ Alumni</span>
+<section class="hero-section mb-5 text-white">
+    <div class="hero-parallax" id="hero-parallax"></div>
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-up">
+                <h1 class="display-4 fw-bold mb-4">Connect with <span class="text-white">Alumni Worldwide</span></h1>
+                <p class="lead mb-4 opacity-75">Build meaningful connections, discover opportunities, and stay connected with your alma mater through our comprehensive alumni network.</p>
+                {% if not current_user.is_authenticated %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg px-4 me-md-2 btn-hover-expand">
+                        <span>Login <i class="bi bi-box-arrow-in-right"></i></span>
+                    </a>
+                    <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-light btn-lg px-4 btn-hover-expand">
+                        <span>Sign Up <i class="bi bi-person-plus"></i></span>
+                    </a>
                 </div>
-                <div class="floating-card float card-2" style="animation-delay: 1s;">
-                    <i class="bi bi-briefcase-fill"></i>
-                    <span>500+ Job Opportunities</span>
+                {% else %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4">
+                    <a href="{{ url_for('events.index') }}" class="btn btn-light btn-lg px-4 me-md-2 btn-hover-expand">
+                        <span><i class="bi bi-calendar-event me-2"></i>Explore Events</span>
+                    </a>
+                    <a href="{{ url_for('chat.index') }}" class="btn btn-outline-light btn-lg px-4 btn-hover-expand">
+                        <span><i class="bi bi-chat me-2"></i>Start Chatting</span>
+                    </a>
                 </div>
-                <div class="floating-card float card-3" style="animation-delay: 2s;">
-                    <i class="bi bi-calendar-event"></i>
-                    <span>150+ Events</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Statistics Section -->
-<div class="statistics-section py-5 my-5">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-12 mb-4">
-                <h2 class="section-title" data-aos="fade-up">Our Global Alumni Network</h2>
-                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Connecting graduates and creating opportunities worldwide</p>
-            </div>
-        </div>
-        <div class="row text-center">
-            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-card">
-                    <i class="bi bi-people-fill stat-icon"></i>
-                    <h3 class="counter" data-count="5000">0</h3>
-                    <p>Alumni Members</p>
+                {% endif %}
+                
+                <div class="d-flex align-items-center mt-5">
+                    <div class="d-flex me-4">
+                        <div class="me-n3">
+                            <img src="{{ url_for('static', filename='images/profiles/user1.jpg') }}" class="rounded-circle border border-3 border-white" width="48" height="48" alt="User">
+                        </div>
+                        <div class="me-n3">
+                            <img src="{{ url_for('static', filename='images/profiles/user2.jpg') }}" class="rounded-circle border border-3 border-white" width="48" height="48" alt="User">
+                        </div>
+                        <div class="me-n3">
+                            <img src="{{ url_for('static', filename='images/profiles/user3.jpg') }}" class="rounded-circle border border-3 border-white" width="48" height="48" alt="User">
+                        </div>
+                        <div>
+                            <div class="rounded-circle border border-3 border-white d-flex align-items-center justify-content-center bg-primary" style="width: 48px; height: 48px;">
+                                <span class="text-white fw-bold">5k+</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="mb-0 opacity-75">Join thousands of alumni<br>already connected</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="stat-card">
-                    <i class="bi bi-briefcase-fill stat-icon"></i>
-                    <h3 class="counter" data-count="500">0</h3>
-                    <p>Job Opportunities</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="400">
-                <div class="stat-card">
-                    <i class="bi bi-calendar-event stat-icon"></i>
-                    <h3 class="counter" data-count="150">0</h3>
-                    <p>Annual Events</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="500">
-                <div class="stat-card">
-                    <i class="bi bi-globe stat-icon"></i>
-                    <h3 class="counter" data-count="45">0</h3>
-                    <p>Countries Represented</p>
-                </div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                <img src="{{ url_for('static', filename='images/hero-image.png') }}" alt="Alumni Network" class="img-fluid rounded-lg shadow-lg">
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Features Section -->
-<div class="features-section py-5">
+<!-- Navigation Section for Authenticated Users -->
+{% if current_user.is_authenticated %}
+<section class="quick-access-nav py-5">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="section-title" data-aos="fade-up">Key Features</h2>
-                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Everything you need to stay connected with your alma mater</p>
-            </div>
-        </div>
-        
-        <div class="row mb-5 align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="feature-image-container">
-                    <img src="{{ url_for('static', filename='images/events-feature.jpg') }}" alt="Alumni Events" class="img-fluid rounded shadow">
-                </div>
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="feature-card">
-                    <div class="feature-icon">
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100 p-4">
+                    <div class="icon mb-3">
                         <i class="bi bi-calendar-event"></i>
                     </div>
-                    <h3>Events & Reunions</h3>
-                    <p>Stay updated with the latest alumni events, reunions, and networking opportunities. Reconnect with old classmates and make new connections at our various gatherings throughout the year.</p>
-                    <a href="{{ url_for('events.index') }}" class="btn btn-outline-primary">View Events <i class="bi bi-arrow-right"></i></a>
+                    <h4>Events</h4>
+                    <p class="text-muted mb-4">Attend alumni gatherings and networking opportunities.</p>
+                    <a href="{{ url_for('events.index') }}" class="btn btn-sm btn-outline-primary">Browse Events</a>
                 </div>
             </div>
-        </div>
-        
-        <div class="row mb-5 align-items-center flex-row-reverse">
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="feature-image-container">
-                    <img src="{{ url_for('static', filename='images/jobs-feature.jpg') }}" alt="Job Opportunities" class="img-fluid rounded shadow">
-                </div>
-            </div>
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="feature-card">
-                    <div class="feature-icon">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100 p-4">
+                    <div class="icon mb-3">
                         <i class="bi bi-briefcase"></i>
                     </div>
-                    <h3>Career Opportunities</h3>
-                    <p>Discover job opportunities shared by fellow alumni and the university network. Post job openings at your company or find your next career move through our extensive job board.</p>
-                    <a href="{{ url_for('jobs.index') }}" class="btn btn-outline-primary">Explore Jobs <i class="bi bi-arrow-right"></i></a>
+                    <h4>Jobs</h4>
+                    <p class="text-muted mb-4">Find career opportunities shared by fellow alumni.</p>
+                    <a href="{{ url_for('jobs.index') }}" class="btn btn-sm btn-outline-primary">View Opportunities</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100 p-4">
+                    <div class="icon mb-3">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h4>Forum</h4>
+                    <p class="text-muted mb-4">Join discussions with alumni about various topics.</p>
+                    <a href="{{ url_for('forum.index') }}" class="btn btn-sm btn-outline-primary">Explore Discussions</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100 p-4">
+                    <div class="icon mb-3">
+                        <i class="bi bi-chat"></i>
+                    </div>
+                    <h4>Chat</h4>
+                    <p class="text-muted mb-4">Connect directly with alumni and mentors in real-time.</p>
+                    <a href="{{ url_for('chat.index') }}" class="btn btn-sm btn-outline-primary">Start Chatting</a>
                 </div>
             </div>
         </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Key Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center text-center mb-5">
+            <div class="col-lg-8" data-aos="fade-up">
+                <h2 class="section-title fw-bold mb-3">Key Features</h2>
+                <p class="section-subtitle text-muted lead mb-0">Everything you need to stay connected with your alma mater</p>
+            </div>
+        </div>
         
-        <div class="row mb-5 align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                <div class="feature-image-container">
-                    <img src="{{ url_for('static', filename='images/mentorship-feature.jpg') }}" alt="Mentorship Program" class="img-fluid rounded shadow">
+        <div class="row g-4">
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card key-feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-people-fill text-primary fs-4"></i>
+                            </div>
+                            <h4 class="mb-0">Alumni Directory</h4>
+                        </div>
+                        <p class="text-muted mb-3">Search and connect with fellow alumni from your graduation year, department, or location. Build your professional network and foster meaningful relationships.</p>
+                        <a href="#" class="text-decoration-none text-primary">Learn more <i class="bi bi-arrow-right"></i></a>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-person-check"></i>
+            
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="card key-feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-chat-dots text-primary fs-4"></i>
+                            </div>
+                            <h4 class="mb-0">Forums & Discussions</h4>
+                        </div>
+                        <p class="text-muted mb-3">Engage in topic-based discussions with fellow alumni. Share experiences, seek advice, and participate in knowledge-sharing within our community forums.</p>
+                        <a href="{{ url_for('forum.index') }}" class="text-decoration-none text-primary">Learn more <i class="bi bi-arrow-right"></i></a>
                     </div>
-                    <h3>Mentorship Program</h3>
-                    <p>Connect with experienced alumni for guidance and career advice. Our mentorship program pairs alumni at different stages of their careers for mutual growth and development.</p>
-                    <a href="{{ url_for('mentorship.index') }}" class="btn btn-outline-primary">Join Program <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="card key-feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-calendar-event text-primary fs-4"></i>
+                            </div>
+                            <h4 class="mb-0">Events & Reunions</h4>
+                        </div>
+                        <p class="text-muted mb-3">Stay updated with upcoming alumni events, reunions, and networking opportunities. Register for events and reconnect with old classmates in person.</p>
+                        <a href="{{ url_for('events.index') }}" class="text-decoration-none text-primary">Learn more <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="card key-feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="bi bi-chat text-primary fs-4"></i>
+                            </div>
+                            <h4 class="mb-0">Real-time Chat</h4>
+                        </div>
+                        <p class="text-muted mb-3">Connect directly with alumni and mentors through our integrated chat platform. Have private conversations or create group chats with fellow graduates.</p>
+                        <a href="{{ url_for('chat.index') }}" class="text-decoration-none text-primary">Learn more <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section" data-aos="fade-up">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-4">Ready to Connect with Your Alumni Community?</h2>
+                <p class="lead mb-4">Join thousands of alumni already benefiting from our network</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg px-5 rounded-pill me-md-2 btn-hover-expand">
+                        <span>Get Started <i class="bi bi-arrow-right-circle"></i></span>
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-5 rounded-pill btn-hover-expand">
+                        <span>Login <i class="bi bi-box-arrow-in-right"></i></span>
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('profile.view_profile') }}" class="btn btn-primary btn-lg px-5 rounded-pill me-md-2 btn-hover-expand">
+                        <span>View Profile <i class="bi bi-person-circle"></i></span>
+                    </a>
+                    <a href="{{ url_for('profile.alumni_directory') }}" class="btn btn-outline-primary btn-lg px-5 rounded-pill btn-hover-expand">
+                        <span>Browse Directory <i class="bi bi-grid-3x3-gap"></i></span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<div class="section-wrapper with-gradient my-5">
+    <div class="blob-shape blob-1"></div>
+    <div class="blob-shape blob-2"></div>
+    <div class="statistics-section py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-12 mb-4">
+                    <h2 class="section-title" data-aos="fade-up">Our Global Alumni Network</h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Connecting graduates and creating opportunities worldwide</p>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-card glass-card p-4">
+                        <i class="bi bi-people-fill stat-icon"></i>
+                        <h3 class="counter" data-count="5000">0</h3>
+                        <p>Alumni Members</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-card glass-card p-4">
+                        <i class="bi bi-briefcase-fill stat-icon"></i>
+                        <h3 class="counter" data-count="500">0</h3>
+                        <p>Job Opportunities</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-card glass-card p-4">
+                        <i class="bi bi-calendar-event stat-icon"></i>
+                        <h3 class="counter" data-count="150">0</h3>
+                        <p>Annual Events</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="stat-card glass-card p-4">
+                        <i class="bi bi-globe stat-icon"></i>
+                        <h3 class="counter" data-count="45">0</h3>
+                        <p>Countries Represented</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,17 +275,20 @@
         
         <div class="row">
             <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card story-card h-100">
+                <div class="card story-card glass-card h-100">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="{{ url_for('static', filename='images/alumni-1.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="Jane Doe">
+                            <div class="story-image-wrapper">
+                                <img src="{{ url_for('static', filename='images/alumni-1.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="Jane Doe">
+                            </div>
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
+                                <span class="badge bg-primary bg-opacity-10 text-primary mb-2">Leadership</span>
                                 <h5 class="card-title">Jane Doe</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">Class of 2015</h6>
                                 <p class="card-text">Jane has recently been appointed as the CEO of a Fortune 500 company. Her journey from campus to corporate leadership showcases the impact of perseverance and vision.</p>
-                                <a href="#" class="btn btn-sm btn-outline-primary">Read Full Story</a>
+                                <a href="#" class="btn btn-sm btn-hover-expand"><span>Read Full Story <i class="bi bi-arrow-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -183,17 +296,20 @@
             </div>
             
             <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card story-card h-100">
+                <div class="card story-card glass-card h-100">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img src="{{ url_for('static', filename='images/alumni-2.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="John Smith">
+                            <div class="story-image-wrapper">
+                                <img src="{{ url_for('static', filename='images/alumni-2.jpg') }}" class="img-fluid rounded-start h-100 story-image" alt="John Smith">
+                            </div>
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
+                                <span class="badge bg-success bg-opacity-10 text-success mb-2">Entrepreneurship</span>
                                 <h5 class="card-title">John Smith</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">Class of 2010</h6>
                                 <p class="card-text">John's startup has recently secured $5 million in Series A funding. His innovative approach to solving real-world problems has garnered attention in the tech industry.</p>
-                                <a href="#" class="btn btn-sm btn-outline-primary">Read Full Story</a>
+                                <a href="#" class="btn btn-sm btn-hover-expand"><span>Read Full Story <i class="bi bi-arrow-right"></i></span></a>
                             </div>
                         </div>
                     </div>
@@ -203,23 +319,8 @@
         
         <div class="row mt-4">
             <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="400">
-                <a href="#" class="btn btn-primary">View All Success Stories</a>
+                <a href="#" class="btn btn-primary btn-hover-expand"><span>View All Success Stories <i class="bi bi-arrow-right"></i></span></a>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Call to Action -->
-<div class="cta-section py-5 text-center">
-    <div class="container">
-        <div class="cta-content p-5 rounded" data-aos="zoom-in">
-            <h2 class="mb-4">Join Our Global Alumni Network Today</h2>
-            <p class="lead mb-4">Connect with fellow alumni, access exclusive resources, and stay updated with the latest events and opportunities.</p>
-            {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('auth.signup') }}" class="btn btn-lg btn-light">Sign Up Now <i class="bi bi-arrow-right"></i></a>
-            {% else %}
-            <a href="{{ url_for('profile.alumni_directory') }}" class="btn btn-lg btn-light">Explore Directory <i class="bi bi-arrow-right"></i></a>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -236,7 +337,7 @@
         
         <div class="row">
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="testimonial-card">
+                <div class="testimonial-card border-gradient">
                     <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
                     <p class="testimonial-text">"The Alumni Portal has been an incredible resource for networking. I found my current job through a posting by a fellow alumnus!"</p>
                     <div class="testimonial-author d-flex align-items-center">
@@ -250,7 +351,7 @@
             </div>
             
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="testimonial-card">
+                <div class="testimonial-card border-gradient">
                     <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
                     <p class="testimonial-text">"The mentorship program matched me with an experienced professional in my field. Their guidance has been invaluable to my career development."</p>
                     <div class="testimonial-author d-flex align-items-center">
@@ -264,7 +365,7 @@
             </div>
             
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
-                <div class="testimonial-card">
+                <div class="testimonial-card border-gradient">
                     <div class="testimonial-quote"><i class="bi bi-quote"></i></div>
                     <p class="testimonial-text">"I love attending the alumni events! It's a great way to reconnect with old friends and make meaningful professional connections."</p>
                     <div class="testimonial-author d-flex align-items-center">
@@ -283,13 +384,124 @@
 
 {% block extra_js %}
 <script>
-    // Add an animated typing cursor to the hero text
-    const heroTextElement = document.querySelector('.hero-text');
-    if (heroTextElement) {
-        const cursorElement = document.querySelector('.typing-cursor');
-        setInterval(() => {
-            cursorElement.style.opacity = cursorElement.style.opacity === '0' ? '1' : '0';
-        }, 500);
+    // Initialize AOS animations with specific settings for homepage
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+    });
+
+    // Counter animation for statistics
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200;
+
+    function animateCounters() {
+        counters.forEach(counter => {
+            const targetValue = parseInt(counter.getAttribute('data-count'));
+            const startValue = 0;
+            const increment = targetValue / speed;
+            let currentValue = startValue;
+
+            const updateCounter = () => {
+                currentValue += increment;
+                
+                if (currentValue < targetValue) {
+                    counter.textContent = Math.ceil(currentValue);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = targetValue;
+                }
+            };
+
+            updateCounter();
+        });
     }
+
+    // Use Intersection Observer to trigger counter animation when in viewport
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe the statistics section
+    const statisticsSection = document.querySelector('.statistics-section');
+    if (statisticsSection) {
+        observer.observe(statisticsSection);
+    }
+    
+    // Parallax effect for hero section
+    const heroParallax = document.getElementById('hero-parallax');
+    
+    // Create parallax elements
+    function createParallaxItems() {
+        if (!heroParallax) return;
+        
+        // Clear any existing elements
+        heroParallax.innerHTML = '';
+        
+        // Create random floating elements
+        for (let i = 0; i < 20; i++) {
+            const size = Math.random() * 50 + 10;
+            const element = document.createElement('div');
+            element.className = 'hero-parallax-item';
+            element.style.width = `${size}px`;
+            element.style.height = `${size}px`;
+            element.style.left = `${Math.random() * 100}%`;
+            element.style.top = `${Math.random() * 100}%`;
+            element.style.opacity = `${Math.random() * 0.3}`;
+            
+            // Store random movement values
+            element.dataset.speedX = Math.random() * 0.05 - 0.025;
+            element.dataset.speedY = Math.random() * 0.05 - 0.025;
+            element.dataset.baseX = parseFloat(element.style.left);
+            element.dataset.baseY = parseFloat(element.style.top);
+            
+            heroParallax.appendChild(element);
+        }
+    }
+    
+    // Animate parallax elements
+    function animateParallax() {
+        if (!heroParallax) return;
+        
+        document.addEventListener('mousemove', (e) => {
+            const parallaxItems = document.querySelectorAll('.hero-parallax-item');
+            
+            // Get mouse position as a percentage of window
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            parallaxItems.forEach(item => {
+                const speedX = parseFloat(item.dataset.speedX);
+                const speedY = parseFloat(item.dataset.speedY);
+                const baseX = parseFloat(item.dataset.baseX);
+                const baseY = parseFloat(item.dataset.baseY);
+                
+                // Calculate new position based on mouse movement
+                const newX = baseX + ((mouseX - 0.5) * 100 * speedX);
+                const newY = baseY + ((mouseY - 0.5) * 100 * speedY);
+                
+                item.style.left = `${newX}%`;
+                item.style.top = `${newY}%`;
+            });
+        });
+    }
+    
+    // Initialize parallax effect
+    createParallaxItems();
+    animateParallax();
+    
+    // Recreate parallax items on window resize
+    window.addEventListener('resize', createParallaxItems);
 </script>
 {% endblock %} 

@@ -23,7 +23,7 @@ def view_event(event_id):
     if current_user.is_authenticated:
         registration = EventRegistration.query.filter_by(user_id=current_user.id, event_id=event_id).first()
         registered = registration is not None
-    return render_template('events/view.html', event=event, registered=registered)
+    return render_template('events/view.html', event=event, registered=registered, now=datetime.utcnow())
 
 @events.route('/register/<int:event_id>')
 @login_required
@@ -89,9 +89,9 @@ def my_events():
 @events.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_event():
-    """Create a new event (admin only)."""
-    if not current_user.is_admin:
-        flash('You do not have permission to create events.')
+    """Create a new event (allowed for admins, alumni, and mentors)."""
+    if not (current_user.is_admin or current_user.role in ['alumni', 'mentor']):
+        flash('You do not have permission to create events. Only alumni and mentors can create events.')
         return redirect(url_for('events.index'))
         
     if request.method == 'POST':
@@ -119,7 +119,8 @@ def create_event():
             description=description,
             location=location,
             event_date=event_datetime,
-            image=image
+            image=image,
+            creator_id=current_user.id
         )
         
         from app import db
@@ -130,3 +131,74 @@ def create_event():
         return redirect(url_for('events.view_event', event_id=new_event.id))
         
     return render_template('events/create.html')
+
+@events.route('/edit/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def edit_event(event_id):
+    """Edit an existing event."""
+    event = Event.query.get_or_404(event_id)
+    
+    # Check if user is authorized to edit this event
+    if not current_user.is_admin and event.creator_id != current_user.id:
+        flash('You do not have permission to edit this event.')
+        return redirect(url_for('events.view_event', event_id=event_id))
+    
+    if request.method == 'POST':
+        event.title = request.form.get('title')
+        event.description = request.form.get('description')
+        event.location = request.form.get('location')
+        event_date_str = request.form.get('event_date')
+        event_time_str = request.form.get('event_time')
+        
+        # Parse date and time
+        event.event_date = datetime.strptime(f"{event_date_str} {event_time_str}", "%Y-%m-%d %H:%M")
+        
+        # Handle image upload
+        if 'image' in request.files:
+            file = request.files['image']
+            if file.filename:
+                # Remove old image if it exists
+                if event.image and os.path.exists(os.path.join('static/images/events', event.image)):
+                    os.remove(os.path.join('static/images/events', event.image))
+                
+                filename = secure_filename(file.filename)
+                file_path = os.path.join('static/images/events', filename)
+                file.save(file_path)
+                event.image = filename
+            elif 'keep_image' not in request.form and event.image:
+                # Remove old image if it exists
+                if os.path.exists(os.path.join('static/images/events', event.image)):
+                    os.remove(os.path.join('static/images/events', event.image))
+                event.image = None
+        
+        from app import db
+        db.session.commit()
+        
+        flash('Event updated successfully!')
+        return redirect(url_for('events.view_event', event_id=event_id))
+    
+    return render_template('events/edit.html', event=event)
+
+@events.route('/delete/<int:event_id>')
+@login_required
+def delete_event(event_id):
+    """Delete an event."""
+    event = Event.query.get_or_404(event_id)
+    
+    # Check if user is authorized to delete this event
+    if not current_user.is_admin and event.creator_id != current_user.id:
+        flash('You do not have permission to delete this event.')
+        return redirect(url_for('events.view_event', event_id=event_id))
+    
+    # Remove image if it exists
+    if event.image and os.path.exists(os.path.join('static/images/events', event.image)):
+        os.remove(os.path.join('static/images/events', event.image))
+    
+    from app import db
+    
+    # Delete event registrations (should be handled by cascade)
+    db.session.delete(event)
+    db.session.commit()
+    
+    flash('Event deleted successfully!')
+    return redirect(url_for('events.index'))
