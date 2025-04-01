@@ -103,7 +103,7 @@
                             <a href="{{ url_for('jobs.view_job', job_id=job.id) }}" class="list-group-item list-group-item-action">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h6 class="mb-1">{{ job.title }}</h6>
-                                    <small>{{ job.posted_date|time_since }}</small>
+                                    <small>{{ job.created_at|time_since }}</small>
                                 </div>
                                 <small class="text-muted">{{ job.company }} - {{ job.location }}</small>
                             </a>

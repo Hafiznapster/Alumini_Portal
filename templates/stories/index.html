@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Alumni Stories - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-3">Alumni Stories</h1>
+            <p class="lead text-muted">Discover inspiring stories and experiences shared by our alumni community.</p>
+        </div>
+        {% if current_user.role == 'alumni' %}
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('stories.create_story') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Share Your Story
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if stories.items %}
+    <div class="row">
+        {% for story in stories.items %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if story.image %}
+                <img src="{{ url_for('static', filename='images/stories/' + story.image) }}" class="card-img-top" alt="{{ story.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-journal-text display-4 text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ story.title }}</h5>
+                    <p class="card-text text-muted">{{ story.summary|truncate(150) }}</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            {% if story.author.profile_pic %}
+                            <img src="{{ url_for('static', filename='images/profiles/' + story.author.profile_pic) }}" alt="{{ story.author.name }}" class="rounded-circle me-2" style="width: 24px; height: 24px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-primary text-white me-2 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 12px;">
+                                {{ story.author.name[0].upper() }}
+                            </div>
+                            {% endif %}
+                            <small class="text-muted">{{ story.author.name }}</small>
+                        </div>
+                        <small class="text-muted">{{ story.created_at.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ url_for('stories.view_story', story_id=story.id) }}" class="btn btn-outline-primary btn-sm w-100">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if stories.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page in range(1, stories.pages + 1) %}
+            <li class="page-item {% if page == stories.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('stories.index', page=page) }}">{{ page }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-journal-text display-1 text-muted mb-3"></i>
+        <h3>No Stories Yet</h3>
+        <p class="text-muted">Be the first to share your story with the community!</p>
+        {% if current_user.role == 'alumni' %}
+        <a href="{{ url_for('stories.create_story') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Share Your Story
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

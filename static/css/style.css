@@ -331,16 +331,6 @@ body {
     flex-direction: column;
 }
 
-/* Forum Styling */
-.forum-categories .card {
-    transition: var(--transition);
-}
-
-.forum-categories .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.1);
-}
-
 /* Events and Jobs Listings */
 .event-card, .job-card {
     margin-bottom: 1.5rem;

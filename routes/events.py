@@ -11,8 +11,8 @@ events = Blueprint('events', __name__, url_prefix='/events')
 @login_required
 def index():
     """View all events."""
-    upcoming_events = Event.query.filter(Event.event_date >= datetime.utcnow()).order_by(Event.event_date).all()
-    past_events = Event.query.filter(Event.event_date < datetime.utcnow()).order_by(Event.event_date.desc()).all()
+    upcoming_events = Event.query.filter(Event.date >= datetime.utcnow()).order_by(Event.date).all()
+    past_events = Event.query.filter(Event.date < datetime.utcnow()).order_by(Event.date.desc()).all()
     return render_template('events/index.html', upcoming_events=upcoming_events, past_events=past_events)
 
 @events.route('/view/<int:event_id>')
@@ -38,7 +38,7 @@ def register_event(event_id):
         return redirect(url_for('events.view_event', event_id=event_id))
         
     # Check if event date has passed
-    if event.event_date < datetime.utcnow():
+    if event.date < datetime.utcnow():
         flash('This event has already taken place.')
         return redirect(url_for('events.view_event', event_id=event_id))
         
@@ -64,7 +64,7 @@ def unregister_event(event_id):
         return redirect(url_for('events.view_event', event_id=event_id))
         
     # Check if event date has passed
-    if event.event_date < datetime.utcnow():
+    if event.date < datetime.utcnow():
         flash('This event has already taken place.')
         return redirect(url_for('events.view_event', event_id=event_id))
         
@@ -82,8 +82,8 @@ def my_events():
     """View events the user is registered for."""
     registrations = EventRegistration.query.filter_by(user_id=current_user.id).all()
     events = [reg.event for reg in registrations]
-    upcoming = [event for event in events if event.event_date >= datetime.utcnow()]
-    past = [event for event in events if event.event_date < datetime.utcnow()]
+    upcoming = [event for event in events if event.date >= datetime.utcnow()]
+    past = [event for event in events if event.date < datetime.utcnow()]
     return render_template('events/my_events.html', upcoming_events=upcoming, past_events=past)
 
 @events.route('/create', methods=['GET', 'POST'])
@@ -118,9 +118,9 @@ def create_event():
             title=title,
             description=description,
             location=location,
-            event_date=event_datetime,
+            date=event_datetime,
             image=image,
-            creator_id=current_user.id
+            created_by=current_user.id
         )
         
         from app import db
@@ -139,7 +139,7 @@ def edit_event(event_id):
     event = Event.query.get_or_404(event_id)
     
     # Check if user is authorized to edit this event
-    if not current_user.is_admin and event.creator_id != current_user.id:
+    if not current_user.is_admin and event.created_by != current_user.id:
         flash('You do not have permission to edit this event.')
         return redirect(url_for('events.view_event', event_id=event_id))
     
@@ -151,25 +151,16 @@ def edit_event(event_id):
         event_time_str = request.form.get('event_time')
         
         # Parse date and time
-        event.event_date = datetime.strptime(f"{event_date_str} {event_time_str}", "%Y-%m-%d %H:%M")
+        event.date = datetime.strptime(f"{event_date_str} {event_time_str}", "%Y-%m-%d %H:%M")
         
         # Handle image upload
         if 'image' in request.files:
             file = request.files['image']
             if file.filename:
-                # Remove old image if it exists
-                if event.image and os.path.exists(os.path.join('static/images/events', event.image)):
-                    os.remove(os.path.join('static/images/events', event.image))
-                
                 filename = secure_filename(file.filename)
                 file_path = os.path.join('static/images/events', filename)
                 file.save(file_path)
                 event.image = filename
-            elif 'keep_image' not in request.form and event.image:
-                # Remove old image if it exists
-                if os.path.exists(os.path.join('static/images/events', event.image)):
-                    os.remove(os.path.join('static/images/events', event.image))
-                event.image = None
         
         from app import db
         db.session.commit()
@@ -186,7 +177,7 @@ def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
     
     # Check if user is authorized to delete this event
-    if not current_user.is_admin and event.creator_id != current_user.id:
+    if not current_user.is_admin and event.created_by != current_user.id:
         flash('You do not have permission to delete this event.')
         return redirect(url_for('events.view_event', event_id=event_id))
     

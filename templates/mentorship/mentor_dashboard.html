@@ -6,115 +6,104 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-md-4">
-            <div class="card mb-4">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Mentor Profile</h5>
-                    <div class="text-center mb-3">
-                        <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" 
-                             alt="{{ current_user.name }}" 
-                             class="rounded-circle mentor-profile-pic">
+                    <div class="text-center mb-4">
+                        {{ profile_image(current_user, size='large') }}
                     </div>
-                    <h6 class="text-center mb-3">{{ current_user.name }}</h6>
-                    <p><strong>Expertise:</strong> {{ mentor_profile.expertise }}</p>
-                    <p><strong>Experience:</strong> {{ mentor_profile.experience_years }} years</p>
-                    <p><strong>Availability:</strong> {{ mentor_profile.availability }}</p>
-                    <p><strong>Current Mentees:</strong> {{ mentor_profile.current_mentees }}/{{ mentor_profile.max_mentees }}</p>
-                    {% if mentor_profile.rating > 0 %}
-                    <p><strong>Rating:</strong> {{ "%.1f"|format(mentor_profile.rating) }}/5.0 ({{ mentor_profile.total_ratings }} ratings)</p>
-                    {% endif %}
-                </div>
-                <div class="card-footer">
-                    <a href="{{ url_for('mentorship.edit_profile') }}" class="btn btn-outline-primary btn-sm w-100">
-                        Edit Profile
-                    </a>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Quick Stats</h5>
-                    <div class="row text-center">
-                        <div class="col">
-                            <h3>{{ mentor_programs|selectattr('status', 'equalto', 'active')|list|length }}</h3>
-                            <p class="text-muted">Active Mentees</p>
-                        </div>
-                        <div class="col">
-                            <h3>{{ mentor_programs|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
-                            <p class="text-muted">Completed</p>
-                        </div>
+                    <h6 class="fw-bold">{{ current_user.name }}</h6>
+                    <p class="text-muted">{{ current_user.degree }} in {{ current_user.major }}</p>
+                    <hr>
+                    <h6 class="fw-bold">Expertise</h6>
+                    <p>{{ mentor.expertise }}</p>
+                    <h6 class="fw-bold">Bio</h6>
+                    <p>{{ mentor.bio }}</p>
+                    <h6 class="fw-bold">Availability</h6>
+                    <p>{{ mentor.availability }}</p>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="availabilityToggle" {% if mentor.is_available %}checked{% endif %}>
+                        <label class="form-check-label" for="availabilityToggle">Available for Mentorship</label>
                     </div>
                 </div>
             </div>
         </div>
-        
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Mentorship Programs</h5>
-                    <div class="btn-group">
-                        <button class="btn btn-outline-primary active" data-filter="active">Active</button>
-                        <button class="btn btn-outline-primary" data-filter="pending">Pending</button>
-                        <button class="btn btn-outline-primary" data-filter="completed">Completed</button>
-                    </div>
-                </div>
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <div id="programs-container">
-                        {% for program in mentor_programs %}
-                        <div class="program-card mb-3" data-status="{{ program.status }}">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h6 class="mb-0">{{ program.mentee.name }}</h6>
-                                        <span class="badge {% if program.status == 'active' %}bg-success{% elif program.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
-                                            {{ program.status|title }}
+                    <h5 class="card-title">Mentorship Requests</h5>
+                    {% if mentorship_requests %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mentee</th>
+                                        <th>Requested On</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in mentorship_requests %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {{ profile_image(request.mentee) }}
+                                                <span class="ms-2">{{ request.mentee.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ {
+                                                'pending': 'warning',
+                                                'accepted': 'success',
+                                                'rejected': 'danger',
+                                                'completed': 'secondary'
+                                            }[request.status] }}">
+                                                {{ request.status.title() }}
                                         </span>
-                                    </div>
-                                    <p><strong>Focus Area:</strong> {{ program.focus_area }}</p>
-                                    <p class="text-muted">Started: {{ program.created_at|format_date }}</p>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <a href="{{ url_for('mentorship.view_program', program_id=program.id) }}" 
-                                           class="btn btn-primary btn-sm">View Details</a>
-                                        
-                                        {% if program.status == 'pending' %}
-                                        <div class="btn-group">
-                                            <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='accept') }}" 
-                                               class="btn btn-success btn-sm">Accept</a>
-                                            <a href="{{ url_for('mentorship.respond_to_request', program_id=program.id, action='decline') }}" 
-                                               class="btn btn-danger btn-sm">Decline</a>
-                                        </div>
+                                        </td>
+                                        <td>
+                                            {% if request.status == 'pending' %}
+                                                <a href="{{ url_for('mentorship.respond_to_request', request_id=request.id, action='accept') }}" 
+                                                   class="btn btn-sm btn-success">Accept</a>
+                                                <a href="{{ url_for('mentorship.respond_to_request', request_id=request.id, action='reject') }}" 
+                                                   class="btn btn-sm btn-danger">Reject</a>
                                         {% endif %}
-                                    </div>
-                                </div>
-                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        {% endfor %}
-                    </div>
+                    {% else %}
+                        <p class="text-muted text-center my-4">No mentorship requests yet.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-document.querySelectorAll('[data-filter]').forEach(button => {
-    button.addEventListener('click', (e) => {
-        // Update active button
-        document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        
-        // Filter programs
-        const status = e.target.dataset.filter;
-        document.querySelectorAll('.program-card').forEach(card => {
-            if (status === 'all' || card.dataset.status === status) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
+document.getElementById('availabilityToggle').addEventListener('change', function() {
+    fetch('/mentorship/toggle-availability', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            is_available: this.checked
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
     });
 });
 </script>
-{% endblock %}
 {% endblock %}

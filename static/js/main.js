@@ -107,26 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    // Forum post character counter with animation
-    let forumPostContent = document.getElementById('post-content');
-    if (forumPostContent) {
-        let charCounter = document.getElementById('char-counter');
-        forumPostContent.addEventListener('input', function() {
-            let remainingChars = 2000 - this.value.length;
-            charCounter.textContent = remainingChars + ' characters remaining';
-            
-            // Animate the counter when getting low
-            if (remainingChars < 50) {
-                charCounter.classList.add('text-danger', 'animate-pulse');
-            } else if (remainingChars < 200) {
-                charCounter.classList.add('text-warning');
-                charCounter.classList.remove('text-danger', 'animate-pulse');
-            } else {
-                charCounter.classList.remove('text-warning', 'text-danger', 'animate-pulse');
-            }
-        });
-    }
     
     // Animated typing effect for hero section
     const heroText = document.querySelector('.hero-text');

@@ -9,7 +9,7 @@ jobs = Blueprint('jobs', __name__, url_prefix='/jobs')
 @login_required
 def index():
     """View all job opportunities."""
-    job_posts = JobPost.query.order_by(JobPost.posted_date.desc()).all()
+    job_posts = JobPost.query.order_by(JobPost.created_at.desc()).all()
     return render_template('jobs/index.html', job_posts=job_posts)
 
 @jobs.route('/view/<int:job_id>')
@@ -29,7 +29,6 @@ def create_job():
         location = request.form.get('location')
         description = request.form.get('description')
         requirements = request.form.get('requirements')
-        application_link = request.form.get('application_link')
         
         new_job = JobPost(
             title=title,
@@ -37,8 +36,7 @@ def create_job():
             location=location,
             description=description,
             requirements=requirements,
-            application_link=application_link,
-            user_id=current_user.id
+            created_by=current_user.id
         )
         
         db.session.add(new_job)
@@ -56,7 +54,7 @@ def edit_job(job_id):
     job = JobPost.query.get_or_404(job_id)
     
     # Check if user is the author or an admin
-    if job.user_id != current_user.id and not current_user.is_admin:
+    if job.created_by != current_user.id and not current_user.is_admin:
         flash('You do not have permission to edit this job posting.')
         return redirect(url_for('jobs.view_job', job_id=job_id))
         
@@ -67,7 +65,6 @@ def edit_job(job_id):
         job.location = request.form.get('location')
         job.description = request.form.get('description')
         job.requirements = request.form.get('requirements')
-        job.application_link = request.form.get('application_link')
         
         db.session.commit()
         
@@ -83,7 +80,7 @@ def delete_job(job_id):
     job = JobPost.query.get_or_404(job_id)
     
     # Check if user is the author or an admin
-    if job.user_id != current_user.id and not current_user.is_admin:
+    if job.created_by != current_user.id and not current_user.is_admin:
         flash('You do not have permission to delete this job posting.')
         return redirect(url_for('jobs.view_job', job_id=job_id))
         

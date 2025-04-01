@@ -1,109 +1,132 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from models import User, MentorshipProgram
+from models import User, Mentor, MentorshipRelation
 from extensions import db
+from datetime import datetime
 
-mentorship = Blueprint('mentorship', __name__, url_prefix='/mentorship')
+bp = Blueprint('mentorship', __name__)
 
-@mentorship.route('/')
+@bp.route('/mentorship')
 @login_required
 def index():
-    """View mentorship dashboard."""
-    mentor_programs = MentorshipProgram.query.filter_by(mentor_id=current_user.id).all()
-    mentee_programs = MentorshipProgram.query.filter_by(mentee_id=current_user.id).all()
-    return render_template('mentorship/index.html', 
-                          mentor_programs=mentor_programs, 
-                          mentee_programs=mentee_programs)
+    # For alumni: show their mentor profile and mentee requests
+    # For users: show available mentors and their mentorship status
+    if current_user.role == 'alumni':
+        mentor = Mentor.query.filter_by(user_id=current_user.id).first()
+        if mentor:
+            mentorship_requests = MentorshipRelation.query.filter_by(mentor_id=mentor.id).all()
+            return render_template('mentorship/mentor_dashboard.html', mentor=mentor, mentorship_requests=mentorship_requests)
+        return render_template('mentorship/become_mentor.html')
+    else:
+        # For users, show available mentors and their current mentorship status
+        available_mentors = Mentor.query.filter_by(is_available=True).all()
+        my_mentorships = MentorshipRelation.query.filter_by(mentee_id=current_user.id).all()
+        return render_template('mentorship/mentee_dashboard.html', mentors=available_mentors, my_mentorships=my_mentorships)
 
-@mentorship.route('/become-mentor', methods=['GET', 'POST'])
+@bp.route('/mentorship/register', methods=['GET', 'POST'])
 @login_required
-def become_mentor():
-    """Register as a mentor."""
-    if request.method == 'POST':
-        # Update user profile with mentor information
-        current_user.mentor_status = True
-        current_user.mentor_fields = request.form.get('fields')
-        current_user.mentor_bio = request.form.get('mentor_bio')
-        
-        db.session.commit()
-        
-        flash('You are now registered as a mentor!')
+def register_mentor():
+    if current_user.role != 'alumni':
+        flash('Only alumni can register as mentors.', 'error')
         return redirect(url_for('mentorship.index'))
-        
-    return render_template('mentorship/become_mentor.html')
-
-@mentorship.route('/mentors')
-@login_required
-def mentor_list():
-    """View list of available mentors."""
-    mentors = User.query.filter_by(mentor_status=True).all()
-    return render_template('mentorship/mentor_list.html', mentors=mentors)
-
-@mentorship.route('/request/<int:mentor_id>', methods=['GET', 'POST'])
-@login_required
-def request_mentorship(mentor_id):
-    """Request mentorship from a specific mentor."""
-    mentor = User.query.get_or_404(mentor_id)
     
-    # Check if already in a mentorship with this mentor
-    existing = MentorshipProgram.query.filter_by(mentor_id=mentor_id, mentee_id=current_user.id).first()
-    if existing:
-        flash('You already have a mentorship program with this mentor.')
-        return redirect(url_for('mentorship.mentor_list'))
-        
     if request.method == 'POST':
-        focus_area = request.form.get('focus_area')
-        notes = request.form.get('notes')
+        expertise = request.form.get('expertise')
+        bio = request.form.get('bio')
+        availability = request.form.get('availability')
+        is_available = request.form.get('is_available', 'true').lower() == 'true'
         
-        new_program = MentorshipProgram(
-            mentor_id=mentor_id,
-            mentee_id=current_user.id,
-            focus_area=focus_area,
-            notes=notes
+        if not all([expertise, bio, availability]):
+            flash('All fields are required.', 'error')
+            return redirect(url_for('mentorship.register_mentor'))
+        
+        mentor = Mentor(
+            user_id=current_user.id,
+            expertise=expertise,
+            bio=bio,
+            availability=availability,
+            is_available=is_available
         )
-        
-        db.session.add(new_program)
+        db.session.add(mentor)
         db.session.commit()
         
-        flash('Mentorship request sent successfully!')
+        flash('Successfully registered as a mentor!', 'success')
         return redirect(url_for('mentorship.index'))
-        
-    return render_template('mentorship/request.html', mentor=mentor)
-
-@mentorship.route('/respond/<int:program_id>/<string:action>')
-@login_required
-def respond_to_request(program_id, action):
-    """Respond to a mentorship request (accept/decline)."""
-    program = MentorshipProgram.query.get_or_404(program_id)
     
-    # Check if user is the mentor
-    if program.mentor_id != current_user.id:
-        flash('You do not have permission to respond to this request.')
+    return render_template('mentorship/register.html')
+
+@bp.route('/mentorship/request/<int:mentor_id>', methods=['POST'])
+@login_required
+def request_mentor(mentor_id):
+    if current_user.role != 'user':
+        flash('Only users can request mentors.', 'error')
         return redirect(url_for('mentorship.index'))
-        
+    
+    # Check if already requested or has active mentorship
+    existing_request = MentorshipRelation.query.filter_by(
+        mentee_id=current_user.id,
+        mentor_id=mentor_id
+    ).first()
+    
+    if existing_request:
+        flash('You have already requested or are in a mentorship with this mentor.', 'info')
+        return redirect(url_for('mentorship.index'))
+    
+    mentor = Mentor.query.get_or_404(mentor_id)
+    if not mentor.is_available:
+        flash('This mentor is currently not available for mentorship.', 'error')
+        return redirect(url_for('mentorship.index'))
+    
+    mentorship = MentorshipRelation(
+        mentor_id=mentor_id,
+        mentee_id=current_user.id
+    )
+    db.session.add(mentorship)
+    db.session.commit()
+    
+    flash('Mentorship request sent successfully!', 'success')
+    return redirect(url_for('mentorship.index'))
+
+@bp.route('/mentorship/respond/<int:request_id>/<string:action>')
+@login_required
+def respond_to_request(request_id, action):
+    if current_user.role != 'alumni':
+        flash('Only alumni can respond to mentorship requests.', 'error')
+        return redirect(url_for('mentorship.index'))
+    
+    mentorship = MentorshipRelation.query.get_or_404(request_id)
+    mentor = Mentor.query.filter_by(user_id=current_user.id).first()
+    
+    if not mentor or mentorship.mentor_id != mentor.id:
+        flash('You are not authorized to respond to this request.', 'error')
+        return redirect(url_for('mentorship.index'))
+    
     if action == 'accept':
-        program.status = 'active'
-        flash('You have accepted the mentorship request.')
-    elif action == 'decline':
-        program.status = 'declined'
-        flash('You have declined the mentorship request.')
+        mentorship.status = 'accepted'
+        mentorship.accepted_at = datetime.utcnow()
+        flash('You have accepted the mentorship request.', 'success')
+    elif action == 'reject':
+        mentorship.status = 'rejected'
+        flash('You have rejected the mentorship request.', 'info')
     
     db.session.commit()
     return redirect(url_for('mentorship.index'))
 
-@mentorship.route('/complete/<int:program_id>')
+@bp.route('/mentorship/toggle-availability', methods=['POST'])
 @login_required
-def complete_mentorship(program_id):
-    """Mark a mentorship program as completed."""
-    program = MentorshipProgram.query.get_or_404(program_id)
+def toggle_availability():
+    """Toggle mentor availability status."""
+    if current_user.role != 'alumni':
+        return jsonify({'error': 'Only alumni can toggle availability'}), 403
     
-    # Check if user is involved in the program
-    if program.mentor_id != current_user.id and program.mentee_id != current_user.id:
-        flash('You do not have permission to update this program.')
-        return redirect(url_for('mentorship.index'))
-        
-    program.status = 'completed'
+    mentor = Mentor.query.filter_by(user_id=current_user.id).first()
+    if not mentor:
+        return jsonify({'error': 'Mentor profile not found'}), 404
+    
+    mentor.is_available = not mentor.is_available
     db.session.commit()
     
-    flash('Mentorship program marked as completed.')
-    return redirect(url_for('mentorship.index')) 
+    return jsonify({
+        'success': True,
+        'is_available': mentor.is_available
+    }) 

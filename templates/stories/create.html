@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Story - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h4 class="mb-0">Create Your Story</h4>
+                    <p class="text-muted mb-0">Share your experiences and insights with the alumni community</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {{ form.csrf_token }}
+                        
+                        <div class="mb-4">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+                            {% if form.title.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.summary.label(class="form-label") }}
+                            {{ form.summary(class="form-control" + (" is-invalid" if form.summary.errors else ""), rows=3) }}
+                            <div class="form-text">This will appear as a preview of your story.</div>
+                            {% if form.summary.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.summary.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.content.label(class="form-label") }}
+                            {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else ""), rows=10) }}
+                            <div class="form-text">Share your story in detail. You can include your experiences, lessons learned, and advice for fellow alumni.</div>
+                            {% if form.content.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.content.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.image.label(class="form-label") }}
+                            {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else "")) }}
+                            <div class="form-text">Upload an image to make your story more engaging. Recommended size: 1200x630 pixels.</div>
+                            {% if form.image.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.image.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Publish Story
+                            </button>
+                            <a href="{{ url_for('stories.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Character counter for summary
+    const summaryTextarea = document.getElementById('summary');
+    if (summaryTextarea) {
+        summaryTextarea.addEventListener('input', function() {
+            const maxLength = 200;
+            const currentLength = this.value.length;
+            const remaining = maxLength - currentLength;
+            
+            // Update character count display
+            let counter = this.nextElementSibling;
+            if (counter && counter.classList.contains('form-text')) {
+                counter.textContent = `${remaining} characters remaining`;
+                
+                // Add warning class when approaching limit
+                if (remaining < 50) {
+                    counter.classList.add('text-warning');
+                } else {
+                    counter.classList.remove('text-warning');
+                }
+            }
+        });
+    }
+</script>
+{% endblock %} 
