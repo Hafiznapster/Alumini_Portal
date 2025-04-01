@@ -112,6 +112,25 @@ def respond_to_request(request_id, action):
     db.session.commit()
     return redirect(url_for('mentorship.index'))
 
+@bp.route('/mentorship/cancel/<int:mentorship_id>', methods=['POST'])
+@login_required
+def cancel_request(mentorship_id):
+    mentorship = MentorshipRelation.query.get_or_404(mentorship_id)
+    
+    if mentorship.mentee_id != current_user.id:
+        flash('You are not authorized to cancel this request.', 'error')
+        return redirect(url_for('mentorship.index'))
+    
+    if mentorship.status != 'pending':
+        flash('Only pending requests can be cancelled.', 'info')
+        return redirect(url_for('mentorship.index'))
+    
+    db.session.delete(mentorship)
+    db.session.commit()
+    
+    flash('Mentorship request cancelled successfully.', 'success')
+    return redirect(url_for('mentorship.index'))
+
 @bp.route('/mentorship/toggle-availability', methods=['POST'])
 @login_required
 def toggle_availability():
@@ -129,4 +148,4 @@ def toggle_availability():
     return jsonify({
         'success': True,
         'is_available': mentor.is_available
-    }) 
+    })

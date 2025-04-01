@@ -68,8 +68,8 @@
         .navbar .nav-link.dropdown-toggle {
             display: flex;
             align-items: center;
-            padding: 0.4rem 0.8rem;
-            gap: 8px;
+            padding: 0.3rem 0.6rem; /* Reduced padding */
+            gap: 6px; /* Reduced gap */
             background: rgba(0, 0, 0, 0.05);
             border-radius: 20px;
             margin-left: 10px;
@@ -81,10 +81,15 @@
         }
 
         .navbar .profile-image-container {
-            width: 28px !important;
-            height: 28px !important;
-            font-size: 12px;
+            width: 20px !important;  /* Further reduced from 28px */
+            height: 20px !important; /* Further reduced from 28px */
+            font-size: 10px;
             flex-shrink: 0;
+        }
+
+        /* Adjust the text size next to the profile image */
+        .navbar .nav-link.dropdown-toggle span {
+            font-size: 0.9rem;
         }
 
         .navbar .dropdown-toggle .ms-2 {
@@ -206,6 +211,14 @@
                                 <span>Chat</span>
                             </a>
                         </li>
+                        {% if current_user.role == 'alumni' %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint.startswith('mentorship') %}active{% endif %}" href="{{ url_for('mentorship.index') }}">
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Mentorship</span>
+                            </a>
+                        </li>
+                        {% endif %}
                         {% if session.get('role') == 'user' %}
                             <li class="nav-item">
                                 <a class="nav-link {% if request.endpoint.startswith('mentorship') %}active{% endif %}" href="{{ url_for('mentorship.index') }}">
@@ -344,4 +357,7 @@
     </script>
     {% block extra_js %}{% endblock %}
 </body>
-</html> 
+</html>
+
+
+

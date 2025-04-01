@@ -32,6 +32,11 @@
                     <a href="{{ url_for('chat.index') }}" class="btn btn-outline-light btn-lg px-4 btn-hover-expand">
                         <span><i class="bi bi-chat me-2"></i>Start Chatting</span>
                     </a>
+                    {% if current_user.role == 'alumni' %}
+                    <a href="{{ url_for('mentorship.register_mentor') }}" class="btn btn-outline-light btn-lg px-4 btn-hover-expand">
+                        <span><i class="bi bi-mortarboard me-2"></i>Become a Mentor</span>
+                    </a>
+                    {% endif %}
                 </div>
                 {% endif %}
                 
@@ -504,4 +509,4 @@
     // Recreate parallax items on window resize
     window.addEventListener('resize', createParallaxItems);
 </script>
-{% endblock %} 
+{% endblock %}
