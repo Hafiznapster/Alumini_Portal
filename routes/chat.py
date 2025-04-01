@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required, current_user
 from models import User, Chat, ChatMessage
 from datetime import datetime
+from extensions import db
 
 chat = Blueprint('chat', __name__, url_prefix='/chat')
 
@@ -11,38 +12,70 @@ def index():
     """View all chats for the current user."""
     user_chats = current_user.chats
     users = User.query.filter(User.id != current_user.id).all()
-    return render_template('chat/index.html', chats=user_chats, users=users)
+    return render_template('chat/index.html', chats=user_chats, users=users, ChatMessage=ChatMessage)
 
 @chat.route('/create', methods=['POST'])
 @login_required
 def create_chat():
     """Create a new chat."""
-    from app import db
+    user_id = request.form.get('user_ids')
+    first_message = request.form.get('first_message')
     
-    user_ids = request.form.getlist('user_ids')
-    name = request.form.get('name')
-    description = request.form.get('description')
-    is_group = len(user_ids) > 1
+    if not user_id:
+        flash('Please select a user to chat with.', 'error')
+        return redirect(url_for('chat.index'))
     
-    # Create the chat
+    # Get the other user
+    other_user = User.query.get_or_404(int(user_id))
+    
+    # Check if a chat already exists between these users
+    existing_chat = Chat.query.filter(
+        Chat.participants.contains(current_user),
+        Chat.participants.contains(other_user),
+        Chat.is_group_chat == False
+    ).first()
+    
+    if existing_chat:
+        # If there's a first message, add it to the existing chat
+        if first_message:
+            new_message = ChatMessage(
+                content=first_message,
+                chat_id=existing_chat.id,
+                sender_id=current_user.id
+            )
+            db.session.add(new_message)
+            db.session.commit()
+        
+        return redirect(url_for('chat.view', chat_id=existing_chat.id))
+    
+    # Create new chat
     new_chat = Chat(
-        name=name if name else "New Chat",
-        description=description,
-        is_group=is_group,
-        created_by=current_user.id
+        is_group_chat=False
     )
     
+    # Set created_by after creation
+    new_chat.created_by = current_user.id
+    
     # Add participants
-    new_chat.participants.append(current_user)  # Add current user as participant
-    for user_id in user_ids:
-        user = User.query.get(int(user_id))
-        if user:
-            new_chat.participants.append(user)
+    new_chat.participants.append(current_user)
+    new_chat.participants.append(other_user)
+    
+    # Set the chat name after adding participants
+    new_chat.name = f"Chat with {other_user.name}"
     
     db.session.add(new_chat)
     db.session.commit()
     
-    flash('Chat created successfully!')
+    # Add first message if provided
+    if first_message:
+        new_message = ChatMessage(
+            content=first_message,
+            chat_id=new_chat.id,
+            sender_id=current_user.id
+        )
+        db.session.add(new_message)
+        db.session.commit()
+    
     return redirect(url_for('chat.view', chat_id=new_chat.id))
 
 @chat.route('/view/<int:chat_id>')
@@ -72,10 +105,10 @@ def send_message(chat_id):
     
     content = request.form.get('content')
     if content:
-        from app import db
+        from extensions import db
         message = ChatMessage(
             content=content,
-            user_id=current_user.id,
+            sender_id=current_user.id,
             chat_id=chat_id
         )
         db.session.add(message)
@@ -87,7 +120,7 @@ def send_message(chat_id):
             'message': {
                 'id': message.id,
                 'content': message.content,
-                'user_id': message.user_id,
+                'user_id': message.sender_id,
                 'created_at': message.created_at.isoformat(),
                 'user_name': current_user.name
             }
@@ -127,7 +160,7 @@ def get_messages(chat_id):
         message_list.append({
             'id': message.id,
             'content': message.content,
-            'user_id': message.user_id,
+            'user_id': message.sender_id,
             'created_at': message.created_at.isoformat(),
             'user_name': message.sender.name
         })
@@ -149,7 +182,7 @@ def add_participant(chat_id):
     if user_id:
         user = User.query.get(int(user_id))
         if user and user not in chat.participants:
-            from app import db
+            from extensions import db
             chat.participants.append(user)
             db.session.commit()
             flash(f'{user.name} has been added to the chat.')
@@ -163,7 +196,7 @@ def leave_chat(chat_id):
     chat = Chat.query.get_or_404(chat_id)
     
     if current_user in chat.participants:
-        from app import db
+        from extensions import db
         chat.participants.remove(current_user)
         
         # If no participants left, delete the chat
@@ -173,4 +206,10 @@ def leave_chat(chat_id):
         db.session.commit()
         flash('You have left the chat.')
     
-    return redirect(url_for('chat.index')) 
+    return redirect(url_for('chat.index'))
+
+
+
+
+
+

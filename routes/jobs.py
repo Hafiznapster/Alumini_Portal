@@ -23,7 +23,7 @@ def view_job(job_id):
 def create_job():
     """Create a new job posting."""
     if request.method == 'POST':
-        from app import db
+        from extensions import db
         title = request.form.get('title')
         company = request.form.get('company')
         location = request.form.get('location')
@@ -59,7 +59,7 @@ def edit_job(job_id):
         return redirect(url_for('jobs.view_job', job_id=job_id))
         
     if request.method == 'POST':
-        from app import db
+        from extensions import db
         job.title = request.form.get('title')
         job.company = request.form.get('company')
         job.location = request.form.get('location')
@@ -84,7 +84,7 @@ def delete_job(job_id):
         flash('You do not have permission to delete this job posting.')
         return redirect(url_for('jobs.view_job', job_id=job_id))
         
-    from app import db
+    from extensions import db
     db.session.delete(job)
     db.session.commit()
     

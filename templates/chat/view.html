@@ -26,7 +26,7 @@
                     <div class="chat-message mb-3 {% if message.user_id == current_user.id %}chat-message-self{% endif %}">
                         <div class="d-flex align-items-start">
                             {% if message.user_id != current_user.id %}
-                            <img src="{{ url_for('static', filename='images/profiles/' + message.sender.profile_pic) }}" 
+                            <img src="{{ url_for('static', filename='images/profiles/' + (message.sender.profile_pic or 'default.png')) }}" 
                                  class="rounded-circle me-2" width="32" height="32" alt="{{ message.sender.name }}">
                             {% endif %}
                             <div class="{% if message.user_id == current_user.id %}ms-auto{% endif %}">
@@ -80,7 +80,7 @@
                 <div class="list-group list-group-flush">
                     {% for participant in chat.participants %}
                     <div class="list-group-item d-flex align-items-center">
-                        <img src="{{ url_for('static', filename='images/profiles/' + participant.profile_pic) }}" 
+                        <img src="{{ url_for('static', filename='images/profiles/' + (participant.profile_pic or 'default.png')) }}" 
                              class="rounded-circle me-2" width="32" height="32" alt="{{ participant.name }}">
                         <div class="flex-grow-1">
                             <h6 class="mb-0">{{ participant.name }}</h6>
@@ -173,7 +173,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
         // Setup periodic refresh for new messages
-        let lastMessageTime = '{{ messages[-1].created_at.isoformat() if messages else "" }}';
+        let lastMessageTime = '{{ messages[0].created_at.isoformat() if messages else "" }}';
         
         // Poll for new messages every 3 seconds
         setInterval(function() {
@@ -205,7 +205,7 @@
                 const messageHtml = `
                     <div class="chat-message mb-3 ${isSelf ? 'chat-message-self' : ''}">
                         <div class="d-flex align-items-start">
-                            ${!isSelf ? `<img src="{{ url_for('static', filename='images/profiles/') }}" 
+                            ${!isSelf ? `<img src="{{ url_for('static', filename='images/profiles/') }}${message.profile_pic || 'default.png'}" 
                                  class="rounded-circle me-2" width="32" height="32" alt="${message.user_name}">` : ''}
                             <div class="${isSelf ? 'ms-auto' : ''}">
                                 <div class="message-content p-2 rounded 
@@ -217,7 +217,7 @@
                                     <small class="text-muted">${new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
                                 </div>
                             </div>
-                            ${isSelf ? `<img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" 
+                            ${isSelf ? `<img src="{{ url_for('static', filename='images/profiles/' + (current_user.profile_pic or 'default.png')) }}" 
                                  class="rounded-circle ms-2" width="32" height="32" alt="{{ current_user.name }}">` : ''}
                         </div>
                     </div>
@@ -267,4 +267,4 @@
     });
 </script>
 {% endblock %}
-{% endblock %} 
+{% endblock %}

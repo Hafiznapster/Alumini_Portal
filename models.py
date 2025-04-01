@@ -70,31 +70,32 @@ class MentorshipProgram(db.Model):
     focus_area = db.Column(db.String(100))
     notes = db.Column(db.Text) 
 
+# Chat participants association table
+chat_participants = db.Table('chat_participants',
+    db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)
+
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    is_group = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     # Relationships
-    messages = db.relationship('ChatMessage', backref='chat', lazy=True, cascade='all, delete-orphan')
-    participants = db.relationship('User', secondary='chat_participants', backref='chats')
-    
+    participants = db.relationship('User', 
+                                 secondary=chat_participants,
+                                 lazy='subquery',
+                                 backref=db.backref('chats', lazy=True))
+    messages = db.relationship('ChatMessage', backref='chat', lazy=True)
+
 class ChatMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
-    # Relationship to access the sender
-    sender = db.relationship('User', backref='sent_messages')
+    # Relationship to get the sender's information
+    sender = db.relationship('User', backref='messages') 
 
-# Association table for chat participants
-chat_participants = db.Table('chat_participants',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'), primary_key=True),
-    db.Column('joined_at', db.DateTime, default=datetime.utcnow)
-) 
+

@@ -17,8 +17,7 @@ def init_db():
             password=generate_password_hash('admin123'),
             name='Admin User',
             graduation_year=2023,
-            role='admin',
-            is_admin=True
+            role='admin'  # Set role instead of is_admin
         )
         db.session.add(admin)
         db.session.commit()

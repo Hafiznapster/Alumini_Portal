@@ -7,18 +7,60 @@
     <div class="row">
         <!-- Chat List -->
         <div class="col-md-4">
+            <!-- Available Users Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Start New Chat</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% if users %}
+                        {% for user in users %}
+                        <div class="list-group-item">
+                            <form action="{{ url_for('chat.create_chat') }}" method="POST" class="d-flex align-items-center">
+                                <input type="hidden" name="user_ids" value="{{ user.id }}">
+                                <img src="{{ url_for('static', filename='images/profiles/' + (user.profile_pic or 'default.jpg')) }}" 
+                                     class="rounded-circle me-2" width="32" height="32" alt="{{ user.name }}">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">{{ user.name }}</h6>
+                                    <small class="text-muted">{{ user.role|capitalize }}</small>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-chat"></i> Chat
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item text-center text-muted">
+                            No users available
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Existing Chats Section -->
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Chats</h5>
+                    <h5 class="mb-0">Recent Chats</h5>
                 </div>
                 <div class="list-group list-group-flush">
                     {% for chat in chats %}
-                    <a href="{{ url_for('chat.view_chat', chat_id=chat.id) }}" class="list-group-item list-group-item-action {% if chat.id == active_chat.id %}active{% endif %}">
+                    <a href="{{ url_for('chat.view', chat_id=chat.id) }}" 
+                       class="list-group-item list-group-item-action">
                         <div class="d-flex align-items-center">
-                            <img src="{{ url_for('static', filename='images/profiles/' + (chat.other_user.profile_pic or 'default.jpg')) }}" class="rounded-circle me-2" width="32" height="32" alt="{{ chat.other_user.name }}">
+                            {% set other_user = chat.participants|selectattr('id', 'ne', current_user.id)|first %}
+                            <img src="{{ url_for('static', filename='images/profiles/' + (other_user.profile_pic or 'default.jpg')) }}" 
+                                 class="rounded-circle me-2" width="32" height="32" alt="{{ other_user.name }}">
                             <div>
-                                <h6 class="mb-0">{{ chat.other_user.name }}</h6>
-                                <small class="text-muted">{{ chat.last_message.content if chat.last_message else 'No messages yet' }}</small>
+                                <h6 class="mb-0">{{ other_user.name }}</h6>
+                                <small class="text-muted">
+                                    {% set latest_message = chat.messages.order_by(ChatMessage.created_at.desc()).first() %}
+                                    {% if latest_message %}
+                                        {{ latest_message.content|truncate(30) }}
+                                    {% else %}
+                                        No messages yet
+                                    {% endif %}
+                                </small>
                             </div>
                         </div>
                     </a>
@@ -33,58 +75,13 @@
 
         <!-- Chat Window -->
         <div class="col-md-8">
-            {% if active_chat %}
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex align-items-center">
-                        <img src="{{ url_for('static', filename='images/profiles/' + (active_chat.other_user.profile_pic or 'default.jpg')) }}" class="rounded-circle me-2" width="32" height="32" alt="{{ active_chat.other_user.name }}">
-                        <h5 class="mb-0">{{ active_chat.other_user.name }}</h5>
-                    </div>
-                </div>
-                <div class="card-body chat-messages" style="height: 400px; overflow-y: auto;">
-                    {% for message in active_chat.messages %}
-                    <div class="message {% if message.sender_id == current_user.id %}message-sent{% else %}message-received{% endif %} mb-3">
-                        <div class="message-content p-2 rounded">
-                            {{ message.content }}
-                        </div>
-                        <small class="text-muted">{{ message.created_at|time_since }}</small>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="card-footer">
-                    <form action="{{ url_for('chat.send_message', chat_id=active_chat.id) }}" method="POST" class="d-flex">
-                        <input type="text" name="content" class="form-control me-2" placeholder="Type your message..." required>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </form>
-                </div>
-            </div>
-            {% else %}
             <div class="card">
                 <div class="card-body text-center">
-                    <h5>Select a chat to start messaging</h5>
+                    <h5>Select a chat or start a new conversation</h5>
+                    <p class="text-muted">Choose a user from the list to begin chatting</p>
                 </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
-
-<style>
-.message {
-    max-width: 70%;
-}
-
-.message-sent {
-    margin-left: auto;
-}
-
-.message-sent .message-content {
-    background-color: #007bff;
-    color: white;
-}
-
-.message-received .message-content {
-    background-color: #f8f9fa;
-}
-</style>
-{% endblock %} 
+{% endblock %}

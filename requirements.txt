@@ -5,3 +5,4 @@ Werkzeug==2.3.7
 Pillow==9.5.0
 Flask-Migrate==4.0.4
 
+
